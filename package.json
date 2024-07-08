@@ -1,0 +1,15 @@
+{
+  "name": "ngx-build",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {},
+  "private": true,
+  "dependencies": {},
+  "devDependencies": {
+    "@nx/js": "19.4.1",
+    "nx": "19.4.1"
+  },
+  "workspaces": [
+    "packages/*"
+  ]
+}
