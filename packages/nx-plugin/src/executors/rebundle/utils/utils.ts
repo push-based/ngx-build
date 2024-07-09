@@ -47,7 +47,7 @@ function extractConfigurationFromTarget(target: string, context: ExecutorContext
 }
 
 export function configOptions(options: RebundleExecutorSchema, context: ExecutorContext): ExecutorConfiguration {
-    const { target, main, targetOutputPath, outputPath} = options;
+    const { target, main, targetOutputPath} = options;
     const targetOptions = target ? extractConfigurationFromTarget(target, context) : {};
     if (!main && !targetOptions['main']) {
         throw new Error('Unable to get the main option, it is required!. Please make sure you ether pass target or main as an option');
