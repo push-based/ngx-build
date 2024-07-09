@@ -1,5 +1,10 @@
+import { createHash } from 'crypto';
 import { Metafile } from 'esbuild';
-import { ReadonlyDeep, PickIndexSignature } from 'type-fest'
+import { ReadonlyDeep } from 'type-fest';
+
+export function hashFromPaths(paths: readonly string[]): string {
+  return createHash('sha256').update(paths.join('')).digest('hex').substring(0, 8).toUpperCase();
+}
 
 export function importsInEntryPoint(
     entryPoint: string,
@@ -21,43 +26,39 @@ export function getChunkNameByEntryPoint(entryPoint: string, metafileOutputs: Re
   return Object.keys(metafileOutputs).find((name) => metafileOutputs[name].entryPoint === entryPoint);
 }
 
-export function mergeOutputs(metaFileOutputs: ReadonlyDeep<Metafile['outputs']>, targets: readonly string[]): ReadonlyDeep<Metafile['outputs']> {
-  const targetsOutput = targets.map((target) => metaFileOutputs[target]).reduce(mergeTargetOutputs);
-
-  return { targetsOutput };
+type ReducedOutputs = {
+  readonly [path: string]: {
+    readonly bytes: number;
+    readonly imports: readonly string[];
+  };
 }
 
-function mergeTargetOutputs(
-    mergedOutputs: ReadonlyDeep<Metafile['outputs'][string]>,
-    currentTarget: ReadonlyDeep<Metafile['outputs'][string]>
-): ReadonlyDeep<Metafile['outputs'][string]> {
-  return {
-    bytes: mergedOutputs.bytes + currentTarget.bytes,
-    inputs: {}, // @TODO
-    imports: mergeImports(mergedOutputs.imports, currentTarget.imports),
-    exports: [...mergedOutputs.exports, ...currentTarget.exports],
-    // @TODO There does not seem to be any logical way to handle merging entry points, in theory this should be able to happen.
-    entryPoint: mergedOutputs.entryPoint || currentTarget.entryPoint,
-    cssBundle: mergedOutputs.cssBundle || currentTarget.cssBundle,
-  }
+type Trace = {
+  readonly [path: string]: readonly string[];
+}[];
+
+function hasCircularDependency(chunk: string, outputs: ReadonlyDeep<Metafile['outputs']>): boolean {
+  return !outputs[chunk].imports.flatMap(({path}) => importsInEntryPoint(path, outputs)).some((path) => path === chunk);
 }
 
-function mergeImports(
-    mergedOutputsImports: ReadonlyDeep<Metafile['outputs'][string]['imports']>,
-    currentOutputsImports: ReadonlyDeep<Metafile['outputs'][string]['imports']>
-): ReadonlyDeep<Metafile['outputs'][string]['imports']> {
-  return [...mergedOutputsImports, ...currentOutputsImports].reduce((mergedImports, currentImport) => {
-    const matchingImport = mergedImports.find(({path}) => path !== currentImport.path);
-    return [...mergedImports, !matchingImport ? currentImport : mergedMatchingImports(currentImport, matchingImport)];
-  }, [] as ReadonlyDeep<Metafile['outputs'][string]['imports']>);
+function isNotDynamic({ kind }: ReadonlyDeep<Metafile['outputs'][string]['imports'][number]>): boolean {
+  return kind !== 'dynamic-import';
 }
 
-function mergedMatchingImports(
-    current: ReadonlyDeep<Metafile['outputs'][string]['imports'][number]>,
-    match: ReadonlyDeep<Metafile['outputs'][string]['imports'][number]>
-): ReadonlyDeep<Metafile['outputs'][string]['imports'][number]> {
-  const kindMatch = current.kind === match.kind && current.kind;
-  const isStatement = [current.kind, match.kind].includes('import-statement') && 'import-statement';
-  const isDynamic = [current.kind, match.kind].includes('dynamic-import') && 'dynamic-import';
-  return { path: current.path || match.path, kind: kindMatch || isStatement || isDynamic || current.kind, external: current.external || match.external }
+function reducedOutputs(outputs: ReadonlyDeep<Metafile['outputs']>): ReducedOutputs {
+  return Object.keys(outputs).reduce<ReducedOutputs>((acc, p) => {
+    const imports = outputs[p].imports.filter(isNotDynamic).map(({path}) => path)
+    return { ...acc, ...{ [p]: { bytes: outputs[p].bytes, imports }}};
+  }, {} as ReducedOutputs);
+}
+
+function mergedReducedOutputs(outputs: ReducedOutputs, mergeTargets: readonly [string, string]) {
+  const hash = hashFromPaths(mergeTargets);
+  const mergedChunk = mergeTargets.map((p) => outputs[p]).reduce((acc, curr) => {
+    return { bytes: acc.bytes + curr.bytes, imports: [...new Set([...acc.imports, ...curr.imports])] }
+  });
+  return Object.keys(outputs).filter((path) => mergeTargets.includes(path)).reduce((acc, path) => {
+    const imports = [...new Set(outputs[path].imports.map((i) => mergeTargets.includes(path) ? hash : path))]
+    return { ...acc, ...{ [path]: { bytes: outputs[path].bytes, imports } } };
+  }, { [hash]: mergedChunk });
 }
