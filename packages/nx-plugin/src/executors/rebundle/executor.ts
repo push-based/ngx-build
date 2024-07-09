@@ -6,7 +6,7 @@ import { Metafile } from "esbuild";
 
 import { RebundleExecutorSchema } from './schema';
 import { getChunkNameByEntryPoint, importsInEntryPoint } from "./utils/chunk.utils";
-import { configOptions, hashFromOutputPaths, removeOldChunks } from "./utils";
+import { configOptions, hashFromOutputPaths, removeOldChunks } from "./utils/utils";
 import { chunkNamingStrategy, chunkSplittingStrategy, sourceMapLoader } from "./utils/rollup.utils";
 
 const POLYFILLS_ENTRY_POINT = 'angular:polyfills:angular:polyfills';

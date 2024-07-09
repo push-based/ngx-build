@@ -1,6 +1,6 @@
 import { createHash } from 'crypto';
 import { ExecutorContext, readTargetOptions } from "@nx/devkit";
-import { RebundleExecutorSchema } from "./schema";
+import { RebundleExecutorSchema } from "../schema";
 import { Metafile } from "esbuild";
 import { join } from "node:path";
 import { rm } from "fs-extra";
