@@ -16,7 +16,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@ngx-build/nx-plugin": ["packages/nx-plugin/src/index.ts"]
+      "@ngx-build/nx-plugin": ["packages/nx-plugin/src/index.ts"],
+      "@ngx-build/utils": ["packages/utils-lib/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
