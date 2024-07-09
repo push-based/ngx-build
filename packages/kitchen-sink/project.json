@@ -6,16 +6,28 @@
   "sourceRoot": "packages/kitchen-sink/src",
   "tags": [],
   "targets": {
+    "rebundle": {
+      "executor": "@ngx-build/nx-plugin:rebundle",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "main": "packages/kitchen-sink/src/main.ts",
+        "targetOutputPath": "dist/packages/kitchen-sink",
+        "outputPath": "dist/packages/rebundle/kitchen-sink"
+      },
+      "dependsOn": ["build"]
+    },
     "build": {
-      "executor": "@angular-devkit/build-angular:application",
+      "executor": "@angular-devkit/build-angular:browser-esbuild",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/packages/kitchen-sink",
         "index": "packages/kitchen-sink/src/index.html",
-        "browser": "packages/kitchen-sink/src/main.ts",
+        "main": "packages/kitchen-sink/src/main.ts",
         "polyfills": ["zone.js"],
         "tsConfig": "packages/kitchen-sink/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
+        "statsJson": true,
+        "sourceMap": true,
         "assets": [
           {
             "glob": "**/*",
@@ -23,12 +35,7 @@
           }
         ],
         "styles": ["packages/kitchen-sink/src/styles.scss"],
-        "scripts": [],
-        "server": "packages/kitchen-sink/src/main.server.ts",
-        "prerender": true,
-        "ssr": {
-          "entry": "packages/kitchen-sink/server.ts"
-        }
+        "scripts": []
       },
       "configurations": {
         "production": {
