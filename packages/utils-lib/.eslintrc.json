@@ -1,21 +1,19 @@
 {
   "extends": ["../../.eslintrc.json"],
   "ignorePatterns": ["!**/*"],
+  "plugins": ["functional"],
   "overrides": [
     {
-      "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+      "files": ["*.ts"],
       "parserOptions": {
         "project": ["packages/utils-lib/tsconfig.*?.json"]
       },
       "rules": {}
     },
     {
-      "files": ["*.ts", "*.tsx"],
-      "rules": {}
-    },
-    {
-      "files": ["*.js", "*.jsx"],
-      "rules": {}
+      "files": ["*.ts"],
+      "extends": ["plugin:functional/recommended"],
+      "excludedFiles": ["*.spec.ts"]
     },
     {
       "files": ["*.json"],

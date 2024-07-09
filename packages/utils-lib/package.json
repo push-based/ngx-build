@@ -1,7 +1,10 @@
 {
   "name": "@ngx-build/utils",
   "version": "0.0.1",
-  "dependencies": {},
+  "dependencies": {
+    "esbuild": "^0.19.2",
+    "type-fest": "^4.21.0"
+  },
   "type": "commonjs",
   "main": "./index.cjs"
 }
