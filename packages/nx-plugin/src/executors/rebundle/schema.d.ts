@@ -1,5 +1,6 @@
 export interface RebundleExecutorSchema {
-    main: string;
-    targetOutputPath: string;
-    outputPath: string;
+    target?: string;
+    main?: string;
+    targetOutputPath?: string;
+    outputPath?: string;
 }
