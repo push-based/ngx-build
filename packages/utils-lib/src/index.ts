@@ -1,1 +1,1 @@
-export { importsInEntryPoint, getChunkNameByEntryPoint } from './lib/chunk.utils';
+export { importsInEntryPoint, getChunkNameByEntryPoint, mergeStrategy } from './lib/chunk.utils';
