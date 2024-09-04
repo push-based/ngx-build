@@ -71,13 +71,9 @@ export function getLookUp(mergeMap: { [key: string]: string[] }): { [key: string
 }
 
 export function mergeStrategy(entryPoint: string, metafileOutputs: ReadonlyDeep<Metafile['outputs']>, maxBins = 2) {
-  const entryChunk = getChunkNameByEntryPoint(entryPoint, metafileOutputs);
 
-  if (!entryChunk) {
-    throw new Error(`Unable to find chunk name of entry point ${entryPoint}`);
-  }
 
-  const initialChunks = importsInEntryPoint(entryChunk, metafileOutputs);
+  const initialChunks = importsInEntryPoint(entryPoint, metafileOutputs);
 
   const initialChunksGraph: { [key: string]: string[] } = {};
   for (const initialChunk of initialChunks) {

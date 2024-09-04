@@ -6,16 +6,6 @@
   "sourceRoot": "packages/kitchen-sink/src",
   "tags": [],
   "targets": {
-    "rebundle": {
-      "executor": "@ngx-build/nx-plugin:rebundle",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "main": "packages/kitchen-sink/src/main.ts",
-        "targetOutputPath": "dist/packages/kitchen-sink",
-        "outputPath": "dist/packages/rebundle/kitchen-sink"
-      },
-      "dependsOn": ["build"]
-    },
     "build": {
       "executor": "@nx/angular:browser-esbuild",
       "outputs": ["{options.outputPath}"],
@@ -37,7 +27,12 @@
         "styles": ["packages/kitchen-sink/src/styles.scss"],
         "scripts": [],
         "plugins": [
-          "packages/kitchen-sink/esbuild-plugin.ts"
+          {
+            "path": "@ngx-build/esbuild-plugin",
+            "options": {
+              "maxChunks": 6
+            }
+          }
         ]
       },
       "configurations": {
