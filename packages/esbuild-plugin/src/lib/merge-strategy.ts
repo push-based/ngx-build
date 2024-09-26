@@ -1,9 +1,8 @@
-import { ReadonlyDeep } from "type-fest";
 import { Metafile } from "esbuild";
 import { createHash } from "crypto";
-import { importsInEntryPoint } from "@ngx-build/utils";
+import { importsInEntryPoint } from "./utils";
 
-export function getMergeStrategyMap(entryPoint: string, outputs: ReadonlyDeep<Metafile['outputs']>, maxBins: number) {
+export function getMergeStrategyMap(entryPoint: string, outputs: Metafile['outputs'], maxBins: number) {
     const strategy = mergeStrategy(entryPoint, outputs, maxBins);
     const mergedChunks = new Set(Object.values(strategy).flat());
 
@@ -16,7 +15,7 @@ export function getMergeStrategyMap(entryPoint: string, outputs: ReadonlyDeep<Me
     );
 }
 
-function mergeStrategy(entryPoint: string, metafileOutputs: ReadonlyDeep<Metafile['outputs']>, maxBins: number) {
+function mergeStrategy(entryPoint: string, metafileOutputs: Metafile['outputs'], maxBins: number) {
 
     const initialChunks = importsInEntryPoint(entryPoint, metafileOutputs);
 

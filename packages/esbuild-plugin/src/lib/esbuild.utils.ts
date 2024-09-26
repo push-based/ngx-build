@@ -1,6 +1,5 @@
 import { BuildOptions, Metafile, OutputFile } from "esbuild";
 import { posix, sep } from "node:path";
-import { ReadonlyDeep } from "type-fest";
 
 export function getAppEntryPoint(absWorkingDir: BuildOptions['absWorkingDir'], entry: OutputFile['path'] | BuildOptions['entryPoints'], metafileOutputs: Metafile['outputs']): string {
     const main = typeof entry === 'string' ? entry : toFileName(absWorkingDir, getEntryPointFileName(entry));
@@ -13,7 +12,7 @@ export function getAppEntryPoint(absWorkingDir: BuildOptions['absWorkingDir'], e
     return entryChunk;
 }
 
-function getChunkNameByEntryPoint(entryPoint: string, metafileOutputs: ReadonlyDeep<Metafile['outputs']>): string | undefined {
+function getChunkNameByEntryPoint(entryPoint: string, metafileOutputs: Metafile['outputs']): string | undefined {
     return Object.keys(metafileOutputs).find((name) => metafileOutputs[name].entryPoint === entryPoint);
 }
 
