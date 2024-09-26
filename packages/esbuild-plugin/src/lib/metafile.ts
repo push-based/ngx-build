@@ -1,40 +1,48 @@
 import { Metafile } from "esbuild";
 
-export function rebuildMetafileOutputs(mergeStrategy: Map<string, string>, metafileOutputs: Metafile['outputs']) {
-    const outputsMap = new Map<string, Metafile['outputs'][keyof Metafile['outputs']]>();
-    mergeStrategy.forEach((newPath, oldPath) => {
-        if (outputsMap.has(newPath)) {
-            const output = outputsMap.get(newPath)!;
-            outputsMap.set(newPath, {
-                ...output,
-                inputs: output.inputs, // @TODO Inputs will require more merge logic
-                entryPoint: output.entryPoint || metafileOutputs[oldPath].entryPoint,
-                imports: metafileOutputs[oldPath].imports
-                    .map((chunkImport) => ({ ...chunkImport, path: mergeStrategy.get(chunkImport.path)! }))
-                    .filter(({path}) => path !== newPath)
-                    .reduce((outputImports, chunkImport) => {
-                        const outputImport = outputImports.find(({ path}) => path === chunkImport.path);
-                        if (!outputImport) {
-                            outputImports.push(chunkImport);
-                        }
-                        else if (outputImport.kind !== chunkImport.kind) {
-                            //  @TODO This is probably incomplete, we should revisit this and see how to improve it!
-                            outputImport.kind = [chunkImport.kind, outputImport.kind].includes('import-statement') ? 'import-statement' : outputImport.kind;
-                        }
-                        return outputImports;
-                    }, output.imports),
-            });
-        } else {
-            outputsMap.set(newPath, {
-                bytes: 0,
-                inputs: metafileOutputs[oldPath].inputs, // Do I need to do a structured clone for all of these ??
-                imports: metafileOutputs[oldPath].imports
-                    .map((chunkImport) => ({ ...chunkImport, path: mergeStrategy.get(chunkImport.path)! }))
-                    .filter(({path}) => path !== newPath),
-                exports: [],
-                entryPoint: metafileOutputs[oldPath].entryPoint,
-            });
-        }
+export function rebuildMetafileOutputs(
+    rebuildDetails: Map<string, { bytes: number, mergedChunks: string[], path: string, exports: string[],         imports: string[],
+        dynamicImports: string[] }>,
+    metafileOutputs: Metafile['outputs'],
+) {
+    const outputs: Metafile['outputs'] = {};
+
+    rebuildDetails.forEach((chunk) => {
+        outputs[chunk.path] = {
+            imports: mergedImports(chunk.imports, chunk.dynamicImports),
+            inputs: mergedInputs(chunk.mergedChunks.map((chunk) => metafileOutputs[chunk].inputs)),
+            entryPoint: handleEntryPoint(chunk.mergedChunks.map((chunk) => metafileOutputs[chunk].entryPoint)),
+            bytes: chunk.bytes,
+            exports: chunk.exports
+        };
     });
-    return Object.fromEntries(outputsMap.entries());
+    return outputs;
+}
+
+function handleEntryPoint(mergeChunksEntryPoint: Metafile['outputs'][string]['entryPoint'][]): Metafile['outputs'][string]['entryPoint'] {
+    const filtered = mergeChunksEntryPoint.filter(Boolean);
+    console.assert(filtered.length < 2, filtered, 'Warning merged chunks contained multiple entryPoints', filtered.length, filtered);
+    return filtered[0];
+}
+
+function mergedImports(imports: string[], dynamicImports: string[]): Metafile['outputs'][string]['imports'] {
+    return [
+        imports.map((path): Metafile['outputs'][string]['imports'][number] => ({ path, kind: 'import-statement' })),
+        dynamicImports.map((path): Metafile['outputs'][string]['imports'][number] => ({ path, kind: 'dynamic-import'}))
+    ].flat();
+}
+
+function mergedInputs(mergedChunksInputs: Metafile['outputs'][string]['inputs'][]): Metafile['outputs'][string]['inputs'] {
+    const inputs: Metafile['outputs'][string]['inputs'] = {};
+    mergedChunksInputs.forEach((chunkInputs) => {
+        Object.entries(chunkInputs).forEach(([key, value]) => {
+            if (!inputs.hasOwnProperty(key)) {
+                inputs[key] = value;
+            }
+            else {
+                inputs[key].bytesInOutput += value.bytesInOutput;
+            }
+        })
+    });
+    return inputs;
 }

@@ -5,17 +5,15 @@ import { importsInEntryPoint } from "@ngx-build/utils";
 
 export function getMergeStrategyMap(entryPoint: string, outputs: ReadonlyDeep<Metafile['outputs']>, maxBins: number) {
     const strategy = mergeStrategy(entryPoint, outputs, maxBins);
+    const mergedChunks = new Set(Object.values(strategy).flat());
 
-    const lookup = new Map<string, string>(Object.values(strategy).flatMap((values) => {
-        const chunkPath = values.find((chunk) => chunk === entryPoint) || `chunk-${hashFromOutputPaths(values)}.js`;
-        return values.map((chunkName) => ([ chunkName, chunkPath ]));
-    }));
-
-    Object.keys(outputs)
-        .filter((key) => !lookup.has(key) && !key.endsWith('.map'))
-        .forEach((key) => lookup.set(key, `chunk-${hashFromOutputPaths([key])}.js`));
-
-    return lookup;
+     return new Map<string, string[]>(
+        Object.keys(outputs)
+            .filter((chunkName) => !mergedChunks.has(chunkName))
+            .map((chunkName) => [chunkName])
+            .concat(Object.values(strategy))
+            .map((values) => [hashFromOutputPaths(values), values])
+    );
 }
 
 function mergeStrategy(entryPoint: string, metafileOutputs: ReadonlyDeep<Metafile['outputs']>, maxBins: number) {
