@@ -17,8 +17,6 @@
     "baseUrl": ".",
     "paths": {
       "@ngx-build/esbuild-plugin": ["packages/esbuild-plugin/src/index.ts"],
-      "@ngx-build/nx-plugin": ["packages/nx-plugin/src/index.ts"],
-      "@ngx-build/utils": ["packages/utils-lib/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
