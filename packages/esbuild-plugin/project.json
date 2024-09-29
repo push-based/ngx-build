@@ -13,10 +13,12 @@
         "main": "packages/esbuild-plugin/src/index.ts",
         "tsConfig": "packages/esbuild-plugin/tsconfig.lib.json",
         "assets": ["packages/esbuild-plugin/*.md"],
-        "format": ["cjs","esm"],
+        "format": ["cjs", "esm"],
         "declarationRootDir": "packages/esbuild-plugin/src",
         "esbuildOptions": {
-          "outExtension": { ".js":  ".mjs" }
+          "outExtension": {
+            ".js": ".mjs"
+          }
         },
         "bundle": true
       }
@@ -27,9 +29,6 @@
       "options": {
         "reportsDirectory": "../../coverage/packages/esbuild-plugin"
       }
-    },
-    "lint": {
-      "executor": "@nx/eslint:lint"
     }
   }
 }
