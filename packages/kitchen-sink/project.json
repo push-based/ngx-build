@@ -70,10 +70,26 @@
       }
     },
     "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "inputs": [
+        "default",
+        "^default",
+        "{workspaceRoot}/jest.preset.js",
+        {
+          "externalDependencies": ["jest"]
+        }
+      ],
+      "outputs": [
+        "{workspaceRoot}/coverage/{projectRoot}",
+        "{workspaceRoot}\\coverage\\packages\\kitchen-sink"
+      ],
       "options": {
-        "jestConfig": "packages/kitchen-sink/jest.config.ts"
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "coverage": true
+        }
       }
     }
   }
