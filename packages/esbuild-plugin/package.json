@@ -1,8 +1,17 @@
 {
   "name": "@ngx-build/esbuild-plugin",
   "version": "0.0.1",
-  "dependencies": {},
+  "dependencies": {
+    "esbuild": "^0.19.2",
+    "rollup": "^4.18.1"
+  },
   "main": "./index.cjs",
   "module": "./index.mjs",
+  "exports": {
+    ".": {
+      "require": "./index.cjs",
+      "import": "./index.mjs"
+    }
+  },
   "author": "Christopher Holder"
 }

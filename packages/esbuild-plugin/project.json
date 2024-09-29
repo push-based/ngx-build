@@ -14,9 +14,11 @@
         "tsConfig": "packages/esbuild-plugin/tsconfig.lib.json",
         "assets": ["packages/esbuild-plugin/*.md"],
         "format": ["cjs","esm"],
+        "declarationRootDir": "packages/esbuild-plugin/src",
         "esbuildOptions": {
           "outExtension": { ".js":  ".mjs" }
-        }
+        },
+        "bundle": true
       }
     },
     "test": {
@@ -25,6 +27,9 @@
       "options": {
         "reportsDirectory": "../../coverage/packages/esbuild-plugin"
       }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
     }
   }
 }
