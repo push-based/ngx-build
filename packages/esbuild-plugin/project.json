@@ -13,8 +13,10 @@
         "main": "packages/esbuild-plugin/src/index.ts",
         "tsConfig": "packages/esbuild-plugin/tsconfig.lib.json",
         "assets": ["packages/esbuild-plugin/*.md"],
-        "generatePackageJson": true,
-        "format": ["cjs"]
+        "format": ["cjs","esm"],
+        "esbuildOptions": {
+          "outExtension": { ".js":  ".mjs" }
+        }
       }
     },
     "test": {

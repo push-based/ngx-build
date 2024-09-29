@@ -16,8 +16,7 @@
         "polyfills": ["zone.js"],
         "tsConfig": "packages/kitchen-sink/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
-        "statsJson": true,
-        "sourceMap": true,
+        "namedChunks": true,
         "assets": [
           {
             "glob": "**/*",
@@ -26,14 +25,7 @@
         ],
         "styles": ["packages/kitchen-sink/src/styles.scss"],
         "scripts": [],
-        "plugins": [
-          {
-            "path": "@ngx-build/esbuild-plugin",
-            "options": {
-              "maxChunks": 6
-            }
-          }
-        ]
+        "plugins": ["@ngx-build/esbuild-plugin"]
       },
       "configurations": {
         "production": {
@@ -60,7 +52,7 @@
       "defaultConfiguration": "production"
     },
     "serve": {
-      "executor": "@angular-devkit/build-angular:dev-server",
+      "executor": "@nx/angular:dev-server",
       "configurations": {
         "production": {
           "buildTarget": "kitchen-sink:build:production"

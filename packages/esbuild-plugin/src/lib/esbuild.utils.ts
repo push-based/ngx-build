@@ -1,26 +1,40 @@
-import { BuildOptions, Metafile, OutputFile } from "esbuild";
-import { posix, sep } from "node:path";
+import { BuildOptions, Metafile, OutputFile } from 'esbuild';
+import { posix, sep } from 'node:path';
 
-export function getAppEntryPoint(absWorkingDir: BuildOptions['absWorkingDir'], entry: OutputFile['path'] | BuildOptions['entryPoints'], metafileOutputs: Metafile['outputs']): string {
-    const main = typeof entry === 'string' ? entry : toFileName(absWorkingDir, getEntryPointFileName(entry));
-    const entryChunk = getChunkNameByEntryPoint(main, metafileOutputs);
+export type OutputPath = keyof Metafile['outputs'];
 
-    if (!entryChunk) {
-        throw new Error('Could not find entryChunk');
+export function getAppEntryPoint({ absWorkingDir, entryPoints }: BuildOptions, { outputs }: Metafile) {
+    const entryFileName = pathToFileName(absWorkingDir, getEntryPointPath(entryPoints));
+    const chunkName = getChunkNameByEntryPoint(entryFileName, outputs);
+
+    if (!chunkName) {
+        throw new Error('Could not find chunkName for entry file ' + entryFileName);
     }
 
-    return entryChunk;
+    return chunkName;
+}
+
+export function importsInEntryPoint(entryPoint: OutputPath, metaFileOutputs: Metafile['outputs'], traversedImports = [entryPoint]): OutputPath[] {
+    const staticImports = metaFileOutputs[entryPoint].imports.filter(
+        ({ kind, path, external }) => kind !== 'dynamic-import' && !traversedImports.includes(path) && !external,
+    );
+
+    if (!staticImports.length) {
+        return traversedImports;
+    }
+
+    return staticImports.flatMap(({ path }) => importsInEntryPoint(path, metaFileOutputs, [...traversedImports, path]));
 }
 
 function getChunkNameByEntryPoint(entryPoint: string, metafileOutputs: Metafile['outputs']): string | undefined {
     return Object.keys(metafileOutputs).find((name) => metafileOutputs[name].entryPoint === entryPoint);
 }
 
-function toFileName(absWorkingDir: BuildOptions['absWorkingDir'], path: OutputFile['path']): string {
+export function pathToFileName(absWorkingDir: BuildOptions['absWorkingDir'], path: OutputFile['path']): string {
     return path.replace(absWorkingDir + sep, '').replaceAll(sep, posix.sep);
 }
 
-function getEntryPointFileName(entryPoints: BuildOptions['entryPoints']): string {
+function getEntryPointPath(entryPoints: BuildOptions['entryPoints']): string {
     if (!entryPoints) {
         throw new Error('Could not extract entryPoints for entryPoints as its undefined');
     }
@@ -35,7 +49,7 @@ function getEntryPointFileName(entryPoints: BuildOptions['entryPoints']): string
         if (typeof entryPoint === 'string') {
             return entryPoint;
         }
-        return entryPoint.in
+        return entryPoint.in;
     }
     if (typeof entryPoints === 'object' && 'main' in entryPoints) {
         return entryPoints['main'];
