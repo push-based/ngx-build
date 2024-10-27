@@ -10,7 +10,7 @@ export default function optimizeChunksPlugin(options: { main?: string, maxChunks
         name: 'optimize-bundle',
         setup({ onEnd, initialOptions }) {
             onEnd(async (result) => {
-                if (initialOptions.define?.['ngDevMod'] !== 'false') {
+                if (initialOptions.define?.['ngDevMod'] === 'true') {
                     return; // Bail out of optimization on dev build or serve
                 }
                 if (!result.metafile) {
