@@ -10,6 +10,7 @@
       "executor": "@nx/angular:application",
       "outputs": ["{options.outputPath.base}"],
       "options": {
+        "statsJson": true,
         "outputPath": {
           "base": "dist/packages/kitchen-sink"
         },

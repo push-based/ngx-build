@@ -12,21 +12,29 @@ export async function rolldownReBundle(
 ): Promise<RolldownOutput['output']> {
     const bundle = await rolldown({
         input: [entry],
-        // TODO add rolldown minifier
         plugins: [esbuildOutputsLoaderPlugin(outputFiles, initialOptions)],
+        experimental: {
+          strictExecutionOrder: true,
+          chunkModulesOrder: 'exec-order'
+        },
+        platform: 'browser',
+        optimization: {
+            inlineConst: true,
+        },
+
     });
 
     const bundleOutput = await bundle.generate({
         sourcemap: !!initialOptions.sourcemap,
         hashCharacters: 'base36',
         chunkFileNames: preserveFacade,
+        minify: true,
         advancedChunks: {
           groups: [...strategy].filter((s) => s[1].length !== 1).map((([name, chunks] ) => ({
             name,
-            test: new RegExp(chunks.filter((v) => !(v as string).includes('main')).join('|'), 'g') }))
+            test: new RegExp(chunks.join('|'), 'g') }))
           )
-        }
-
+        },
     });
 
     await bundle.close();
