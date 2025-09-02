@@ -1,11 +1,11 @@
 import { Plugin } from 'esbuild';
 import { getAppEntryPoint } from "./lib/esbuild.utils";
-import { rollupReBundle } from "./lib/rollup.utils";
-import { rollupToEsbuildOutputs } from "./lib/bundle-adaptor.utils";
+import { rolldownToEsbuildOutputs } from "./lib/rolldown/bundle-adaptor.utils";
 import { getStrategyLookup } from "./lib/merge-strategy.utils";
+import { rolldownReBundle } from './lib/rolldown/rolldown.utils';
 
 export default function optimizeChunksPlugin(options: { main?: string, maxChunks?: number } = {}): Plugin {
-    const { maxChunks = 1 } = options;
+    const { maxChunks = 10 } = options;
     return {
         name: 'optimize-bundle',
         setup({ onEnd, initialOptions }) {
@@ -23,8 +23,8 @@ export default function optimizeChunksPlugin(options: { main?: string, maxChunks
 
                 const entryChunk = getAppEntryPoint(initialOptions, result.metafile);
                 const { lookup, reverseLookup } = getStrategyLookup(entryChunk, result.metafile, maxChunks);
-                const reBundledOutput = await rollupReBundle(entryChunk, result.outputFiles, initialOptions, lookup);
-                const { newMetafileOutputs, newOutputFiles } = rollupToEsbuildOutputs(reBundledOutput, result.metafile, reverseLookup);
+                const reBundledOutput = await rolldownReBundle(entryChunk, result.outputFiles, initialOptions, lookup);
+                const { newMetafileOutputs, newOutputFiles } = rolldownToEsbuildOutputs(reBundledOutput, result.metafile, reverseLookup);
 
                 result.metafile.outputs = newMetafileOutputs;
                 result.outputFiles = newOutputFiles;

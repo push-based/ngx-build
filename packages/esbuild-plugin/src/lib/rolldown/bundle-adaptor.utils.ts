@@ -1,10 +1,10 @@
 import { Metafile, OutputFile } from 'esbuild';
 import { assert } from 'node:console';
-import { OutputChunk, RollupOutput } from 'rollup';
+import { OutputChunk, RolldownOutput } from 'rolldown';
 
-import { MergeStrategyReverseLookup } from './merge-strategy.utils';
+import { MergeStrategyReverseLookup } from '../merge-strategy.utils';
 
-export function rollupToEsbuildOutputs(rollupOutput: RollupOutput['output'], { outputs }: Metafile, reverseLookup: MergeStrategyReverseLookup) {
+export function rolldownToEsbuildOutputs(rollupOutput: RolldownOutput['output'], { outputs }: Metafile, reverseLookup: MergeStrategyReverseLookup) {
     const newOutputFiles: OutputFile[] = [];
     const newMetafileOutputs: Metafile['outputs'] = {};
     rollupOutput
@@ -15,7 +15,12 @@ export function rollupToEsbuildOutputs(rollupOutput: RollupOutput['output'], { o
             newMetafileOutputs[output.fileName] = {
                 bytes: file.contents.length,
                 imports: mergedImports(output.imports, output.dynamicImports),
-                inputs: mergedInputs(Object.keys(output.modules).map((chunk) => outputs[chunk].inputs)),
+                inputs: mergedInputs(Object.keys(output.modules).map((chunk) => {
+                  if (chunk === 'rolldown:runtime') {
+                    return { [chunk]: { bytesInOutput: 0 } };
+                  }
+                  return outputs[chunk].inputs;
+                })),
                 entryPoint: mergedEntryPoint(reverseLookup.get(output.facadeModuleId!)?.map((chunk) => outputs[chunk].entryPoint) ?? []),
                 exports: output.exports,
             };

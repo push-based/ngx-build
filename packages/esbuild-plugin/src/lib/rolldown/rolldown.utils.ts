@@ -1,29 +1,28 @@
 import { BuildOptions, OutputFile } from 'esbuild';
-import { Plugin, PreRenderedChunk, RollupOutput, rollup } from 'rollup';
+import { Plugin, PreRenderedChunk, RolldownOutput, rolldown } from 'rolldown';
 
-import { pathToFileName } from './esbuild.utils';
-import { MergeStrategyLookup } from './merge-strategy.utils';
+import { pathToFileName } from '../esbuild.utils';
+import { MergeStrategyLookup } from '../merge-strategy.utils';
 
-export async function rollupReBundle(
+export async function rolldownReBundle(
     entry: string,
     outputFiles: OutputFile[],
     initialOptions: BuildOptions,
     strategyLookup: MergeStrategyLookup,
-): Promise<RollupOutput['output']> {
-    const { generate, close } = await rollup({
+): Promise<RolldownOutput['output']> {
+    const bundle = await rolldown({
         input: [entry],
         plugins: [esbuildOutputsLoaderPlugin(outputFiles, initialOptions)],
     });
 
-    const { output } = await generate({
-        compact: true,
+    const { output } = await bundle.generate({
         sourcemap: !!initialOptions.sourcemap,
         chunkFileNames: preserveFacade,
         hashCharacters: 'base36',
         manualChunks: (id) => strategyLookup.get(id),
     });
 
-    await close();
+    await bundle.close();
 
     return output;
 }
