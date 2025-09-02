@@ -5,12 +5,13 @@ import { rollupToEsbuildOutputs } from "./lib/bundle-adaptor.utils";
 import { getStrategyLookup } from "./lib/merge-strategy.utils";
 
 export default function optimizeChunksPlugin(options: { main?: string, maxChunks?: number } = {}): Plugin {
-    const { maxChunks = 6 } = options;
+    const { maxChunks = 1 } = options;
     return {
         name: 'optimize-bundle',
         setup({ onEnd, initialOptions }) {
             onEnd(async (result) => {
-                if (initialOptions.define?.['ngDevMod'] === 'true') {
+                console.log(initialOptions.define)
+                if (initialOptions.define?.['ngDevMode'] !== 'false') {
                     return; // Bail out of optimization on dev build or serve
                 }
                 if (!result.metafile) {

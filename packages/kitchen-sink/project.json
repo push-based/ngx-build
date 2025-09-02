@@ -25,9 +25,13 @@
             "input": "packages/kitchen-sink/public"
           }
         ],
-        "styles": ["packages/kitchen-sink/src/styles.scss"],
+        "styles": [
+          "packages/kitchen-sink/src/styles.scss"
+        ],
         "scripts": [],
-        "plugins": ["@ngx-build/esbuild-plugin"]
+        "plugins": [
+          "@ngx-build/esbuild-plugin"
+        ]
       },
       "configurations": {
         "production": {
@@ -77,7 +81,9 @@
         "^default",
         "{workspaceRoot}/jest.preset.js",
         {
-          "externalDependencies": ["jest"]
+          "externalDependencies": [
+            "jest"
+          ]
         }
       ],
       "outputs": [
@@ -92,6 +98,15 @@
           "ci": true,
           "coverage": true
         }
+      }
+    },
+    "serve-static": {
+      "executor": "@nx/web:file-server",
+      "dependsOn": ["build"],
+      "options": {
+        "buildTarget": "kitchen-sink:build:production",
+        "spa": true,
+        "staticFilePath": "dist/packages/kitchen-sink/browser/"
       }
     }
   }
