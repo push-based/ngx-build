@@ -12,7 +12,7 @@ export function getStrategyLookup(entryPoint: OutputPath, metafile: Metafile, ma
     const strategy = getMergeStrategyMap(entryPoint, metafile, maxBins);
     const lookup: MergeStrategyLookup = new Map([...strategy].flatMap(([key, values]) => values.map((value) => [value, key])));
     const reverseLookup: MergeStrategyReverseLookup = new Map([...lookup].map(([key, value]) => [key, strategy.get(value)!]));
-    return { lookup, reverseLookup };
+    return { lookup, reverseLookup, strategy };
 }
 
 function getMergeStrategyMap(entryPoint: OutputPath, { outputs }: Metafile, maxBins: number): MergeStrategyMap {

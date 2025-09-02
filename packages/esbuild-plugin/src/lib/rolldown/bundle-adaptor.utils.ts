@@ -15,12 +15,7 @@ export function rolldownToEsbuildOutputs(rollupOutput: RolldownOutput['output'],
             newMetafileOutputs[output.fileName] = {
                 bytes: file.contents.length,
                 imports: mergedImports(output.imports, output.dynamicImports),
-                inputs: mergedInputs(Object.keys(output.modules).map((chunk) => {
-                  if (chunk === 'rolldown:runtime') {
-                    return { [chunk]: { bytesInOutput: 0 } };
-                  }
-                  return outputs[chunk].inputs;
-                })),
+                inputs: mergedInputs(Object.keys(output.modules).map((chunk) => outputs[chunk].inputs)),
                 entryPoint: mergedEntryPoint(reverseLookup.get(output.facadeModuleId!)?.map((chunk) => outputs[chunk].entryPoint) ?? []),
                 exports: output.exports,
             };

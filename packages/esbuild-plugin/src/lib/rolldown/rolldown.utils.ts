@@ -1,30 +1,37 @@
 import { BuildOptions, OutputFile } from 'esbuild';
-import { Plugin, PreRenderedChunk, RolldownOutput, rolldown } from 'rolldown';
+import { Plugin, PreRenderedChunk, rolldown, RolldownOutput } from 'rolldown';
 
 import { pathToFileName } from '../esbuild.utils';
-import { MergeStrategyLookup } from '../merge-strategy.utils';
+import { MergeStrategyMap } from '../merge-strategy.utils';
 
 export async function rolldownReBundle(
     entry: string,
     outputFiles: OutputFile[],
     initialOptions: BuildOptions,
-    strategyLookup: MergeStrategyLookup,
+    strategy:  MergeStrategyMap,
 ): Promise<RolldownOutput['output']> {
     const bundle = await rolldown({
         input: [entry],
+        // TODO add rolldown minifier
         plugins: [esbuildOutputsLoaderPlugin(outputFiles, initialOptions)],
     });
 
-    const { output } = await bundle.generate({
+    const bundleOutput = await bundle.generate({
         sourcemap: !!initialOptions.sourcemap,
-        chunkFileNames: preserveFacade,
         hashCharacters: 'base36',
-        manualChunks: (id) => strategyLookup.get(id),
+        chunkFileNames: preserveFacade,
+        advancedChunks: {
+          groups: [...strategy].filter((s) => s[1].length !== 1).map((([name, chunks] ) => ({
+            name,
+            test: new RegExp(chunks.filter((v) => !(v as string).includes('main')).join('|'), 'g') }))
+          )
+        }
+
     });
 
     await bundle.close();
 
-    return output;
+    return bundleOutput.output;
 }
 
 function preserveFacade({ facadeModuleId }: PreRenderedChunk): string {
