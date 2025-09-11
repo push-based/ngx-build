@@ -3,7 +3,7 @@ import { Route } from '@angular/router';
 export const appRoutes: Route[] = [
     {
       path: '0',
-      loadChildren: () => import('../shared/chunkers-3MB-500constants-20components/root-chunker.routes').then(m => m.rootChunkerRoutes),
+      loadChildren: () => import('../shared/chunkers-3MB-500constants-0components/root-chunker.routes').then(m => m.rootChunkerRoutes),
     },
     {
         path: '20',
