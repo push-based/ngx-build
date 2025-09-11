@@ -1,4 +1,4 @@
-import { CONFIG } from './config.js';
+import { CONFIG, getCalculatedConfig } from './config.js';
 import { writeFile } from './file-utils.js';
 import { mkdir } from 'fs/promises';
 
@@ -16,7 +16,7 @@ export function generateRootChunkerComponent(outputPath) {
     const templateBindings = [];
     
     // Generate imports and template bindings for all constants
-    for (let i = 1; i <= CONFIG.NUMBER_OF_CHUNKS; i++) {
+    for (let i = 1; i <= CONFIG.NUMBER_OF_CONSTANTS; i++) {
         const constantName = `CONSTANT_${String(i).padStart(3, '0')}`;
         const constantFileName = `constant-${String(i).padStart(3, '0')}`;
         imports.push(`import { ${constantName} } from './constants/${constantFileName}';`);
@@ -38,18 +38,9 @@ ${imports.join('\n')}
   template: \`
     <div class="root-chunker">
       <h1>Root Chunker Component</h1>
-      <p>This component imports and displays all ${CONFIG.NUMBER_OF_CHUNKS} constants</p>
+      <p>This component imports and displays all ${CONFIG.NUMBER_OF_CONSTANTS} constants</p>
       
-      <div class="router-section">
-        <h2>Lazy Loaded Components</h2>
-        <nav class="chunk-nav">
-${Array.from({length: CONFIG.NUMBER_OF_CHUNKS}, (_, i) => {
-  const chunkNum = String(i + 1).padStart(3, '0');
-  return `          <a routerLink="chunk-${chunkNum}">Chunk ${chunkNum}</a>`;
-}).join(' |\n')}
-        </nav>
-        <router-outlet></router-outlet>
-      </div>
+      <router-outlet></router-outlet>
       
       <div class="constants-grid">
 ${templateBindings.join('\n')}
@@ -121,7 +112,7 @@ ${templateBindings.join('\n')}
   \`]
 })
 export class ${CONFIG.ROOT_COMPONENT_NAME} {
-${Array.from({length: CONFIG.NUMBER_OF_CHUNKS}, (_, i) => {
+${Array.from({length: CONFIG.NUMBER_OF_CONSTANTS}, (_, i) => {
   const constantName = `CONSTANT_${String(i + 1).padStart(3, '0')}`;
   return `  ${constantName} = ${constantName};`;
 }).join('\n')}
@@ -137,21 +128,47 @@ ${Array.from({length: CONFIG.NUMBER_OF_CHUNKS}, (_, i) => {
  */
 export async function generateChunkComponents(outputDir) {
     const chunksDir = `${outputDir}/chunks`;
+    const calculated = getCalculatedConfig();
     
-    console.log(`🔧 Generating ${CONFIG.NUMBER_OF_CHUNKS} individual chunk components...`);
+    console.log(`🔧 Generating ${CONFIG.NUMBER_OF_COMPONENTS} individual chunk components...`);
     console.log(`📁 Creating chunks directory: ${chunksDir}`);
+    console.log(`📊 Distribution: ${calculated.chunksPerComponent} chunks per component (${calculated.remainingChunks} components get +1 chunk)`);
     
     // Create chunks directory
     await mkdir(chunksDir, { recursive: true });
     
-    for (let i = 1; i <= CONFIG.NUMBER_OF_CHUNKS; i++) {
-        const constantName = `CONSTANT_${String(i).padStart(3, '0')}`;
+    for (let i = 1; i <= CONFIG.NUMBER_OF_COMPONENTS; i++) {
         const componentName = `${CONFIG.CHUNK_COMPONENT_PREFIX}${String(i).padStart(3, '0')}${CONFIG.CHUNK_COMPONENT_SUFFIX}`;
         const fileName = `${CONFIG.CHUNK_FILE_PREFIX}${String(i).padStart(3, '0')}${CONFIG.CHUNK_FILE_SUFFIX}`;
         const filePath = `${chunksDir}/${fileName}`;
         
+        // Calculate which constants this component should import
+        const constantsForThisComponent = [];
+        const imports = [];
+        const templateBindings = [];
+        const classProperties = [];
+        
+        // Calculate the range of constants for this component
+        const startConstant = (i - 1) * calculated.chunksPerComponent + 1;
+        const endConstant = Math.min(i * calculated.chunksPerComponent, CONFIG.NUMBER_OF_CONSTANTS);
+        
+        // Add extra constant for remaining chunks if this is one of the first components
+        const extraConstant = i <= calculated.remainingChunks ? 1 : 0;
+        const actualEndConstant = Math.min(endConstant + extraConstant, CONFIG.NUMBER_OF_CONSTANTS);
+        
+        for (let j = startConstant; j <= actualEndConstant; j++) {
+            const constantName = `CONSTANT_${String(j).padStart(3, '0')}`;
+            constantsForThisComponent.push(constantName);
+            imports.push(`import { ${constantName} } from '../constants/constant-${String(j).padStart(3, '0')}';`);
+            templateBindings.push(`      <div class="constant-display">
+        <h3>${constantName}</h3>
+        <p>{{ ${constantName} }}</p>
+      </div>`);
+            classProperties.push(`  ${constantName} = ${constantName};`);
+        }
+        
         const content = `import { Component } from '@angular/core';
-import { ${constantName} } from '../constants/constant-${String(i).padStart(3, '0')}';
+${imports.join('\n')}
 
 @Component({
   standalone: true,
@@ -159,9 +176,9 @@ import { ${constantName} } from '../constants/constant-${String(i).padStart(3, '
   template: \`
     <div class="chunk-component">
       <h2>Chunk ${String(i).padStart(3, '0')} Component</h2>
-      <p>This component displays: <strong>${constantName}</strong></p>
-      <div class="constant-value">
-        {{ ${constantName} }}
+      <p>This component displays ${constantsForThisComponent.length} constants: ${constantsForThisComponent.join(', ')}</p>
+      <div class="constants-container">
+${templateBindings.join('\n')}
       </div>
     </div>
   \`,
@@ -180,22 +197,41 @@ import { ${constantName} } from '../constants/constant-${String(i).padStart(3, '
       margin: 0 0 10px 0;
     }
     
-    .constant-value {
+    .constants-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+      margin-top: 15px;
+    }
+    
+    .constant-display {
       background: white;
       padding: 10px;
       border-radius: 4px;
+      border: 1px solid #ddd;
+    }
+    
+    .constant-display h3 {
+      margin: 0 0 5px 0;
+      color: #333;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    
+    .constant-display p {
+      margin: 0;
       word-break: break-all;
       font-family: monospace;
-      font-size: 12px;
-      border: 1px solid #ddd;
+      font-size: 10px;
+      color: #666;
     }
   \`]
 })
 export class ${componentName} {
-  ${constantName} = ${constantName};
+${classProperties.join('\n')}
 }
 `;
-
+        
         writeFile(filePath, content, `chunk component ${String(i).padStart(3, '0')}`);
     }
 }

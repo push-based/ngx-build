@@ -32,7 +32,7 @@ export function generateChunkRoutesContent() {
     const routes = [];
     
     // Generate routes for all chunk components
-    for (let i = 1; i <= CONFIG.NUMBER_OF_CHUNKS; i++) {
+    for (let i = 1; i <= CONFIG.NUMBER_OF_COMPONENTS; i++) {
         const chunkNum = String(i).padStart(3, '0');
         const componentName = `${CONFIG.CHUNK_COMPONENT_PREFIX}${chunkNum}${CONFIG.CHUNK_COMPONENT_SUFFIX}`;
         const fileName = `${CONFIG.CHUNK_FILE_PREFIX}${chunkNum}${CONFIG.CHUNK_FILE_SUFFIX}`;

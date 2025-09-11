@@ -29,8 +29,10 @@ async function generateChunkersDemo() {
     console.log('🚀 Starting chunkers demo generation...');
     console.log(`📊 Configuration:`);
     console.log(`   - Total size: ${CONFIG.TOTAL_SIZE_MB}MB`);
-    console.log(`   - Number of chunks: ${CONFIG.NUMBER_OF_CHUNKS}`);
+    console.log(`   - Number of chunks: ${CONFIG.NUMBER_OF_CONSTANTS}`);
+    console.log(`   - Number of components: ${CONFIG.NUMBER_OF_COMPONENTS}`);
     console.log(`   - Each constant: ~${calculated.kbPerConstant}KB`);
+    console.log(`   - Chunks per component: ${calculated.chunksPerComponent} (${calculated.remainingChunks} components get +1)`);
     console.log(`   - Output directory: ${CHUNKERS_PATH}`);
     console.log('');
     
@@ -60,10 +62,10 @@ async function generateChunkersDemo() {
         console.log('');
         console.log('✅ Chunkers demo generation complete!');
         console.log(`📊 Generated:`);
-        console.log(`   - ${CONFIG.NUMBER_OF_CHUNKS} individual constant files (~${CONFIG.TOTAL_SIZE_MB}MB total)`);
+        console.log(`   - ${CONFIG.NUMBER_OF_CONSTANTS} individual constant files (~${CONFIG.TOTAL_SIZE_MB}MB total)`);
         console.log(`   - 1 root chunker component`);
-        console.log(`   - ${CONFIG.NUMBER_OF_CHUNKS} individual chunk components`);
-        console.log(`   - Generated chunk routes with ${CONFIG.NUMBER_OF_CHUNKS} lazy routes`);
+        console.log(`   - ${CONFIG.NUMBER_OF_COMPONENTS} individual chunk components`);
+        console.log(`   - Generated chunk routes with ${CONFIG.NUMBER_OF_COMPONENTS} lazy routes`);
         console.log(`   - Generated root chunker routes`);
         console.log('');
         console.log('🚀 All files generated in shared/chunkers directory!');

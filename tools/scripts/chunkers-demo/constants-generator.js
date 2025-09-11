@@ -15,13 +15,13 @@ export async function generateConstantFiles(outputDir) {
     const calculated = getCalculatedConfig();
     const constantsDir = `${outputDir}/constants`;
     
-    console.log(`📊 Generating ${CONFIG.NUMBER_OF_CHUNKS} individual constant files, each ~${calculated.kbPerConstant}KB`);
+    console.log(`📊 Generating ${CONFIG.NUMBER_OF_CONSTANTS} individual constant files, each ~${calculated.kbPerConstant}KB`);
     console.log(`📁 Creating constants directory: ${constantsDir}`);
     
     // Create constants directory
     await mkdir(constantsDir, { recursive: true });
     
-    for (let i = 1; i <= CONFIG.NUMBER_OF_CHUNKS; i++) {
+    for (let i = 1; i <= CONFIG.NUMBER_OF_CONSTANTS; i++) {
         const constantName = `CONSTANT_${String(i).padStart(3, '0')}`;
         const constantValue = generateUniqueString(i, calculated.charsPerConstant);
         const fileName = `constant-${String(i).padStart(3, '0')}.ts`;

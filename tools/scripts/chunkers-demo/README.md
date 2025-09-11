@@ -21,10 +21,10 @@ Edit `config.js` to modify generation behavior:
 
 ```javascript
 export const CONFIG = {
-    TOTAL_SIZE_MB: 10,        // Total size of all constants
-    NUMBER_OF_CHUNKS: 550,    // Number of constants/components
-    CHUNKERS_DIR: 'shared/chunkers', // Output directory
-    // ... other settings
+  TOTAL_SIZE_MB: 10,        // Total size of all constants
+  NUMBER_OF_CONSTANTS: 550,    // Number of constants/components
+  CHUNKERS_DIR: 'shared/chunkers', // Output directory
+  // ... other settings
 };
 ```
 
