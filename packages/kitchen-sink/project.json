@@ -29,10 +29,7 @@
         "styles": [
           "packages/kitchen-sink/src/styles.scss"
         ],
-        "scripts": [],
-        "plugins": [
-          "@ngx-build/esbuild-plugin"
-        ]
+        "scripts": []
       },
       "configurations": {
         "production": {
