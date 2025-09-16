@@ -26,9 +26,7 @@
             "input": "packages/kitchen-sink/public"
           }
         ],
-        "styles": [
-          "packages/kitchen-sink/src/styles.scss"
-        ],
+        "styles": ["packages/kitchen-sink/src/styles.scss"],
         "scripts": []
       },
       "configurations": {
@@ -65,7 +63,8 @@
           "buildTarget": "kitchen-sink:build:development"
         }
       },
-      "defaultConfiguration": "development"
+      "defaultConfiguration": "development",
+      "continuous": true
     },
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
@@ -79,9 +78,7 @@
         "^default",
         "{workspaceRoot}/jest.preset.js",
         {
-          "externalDependencies": [
-            "jest"
-          ]
+          "externalDependencies": ["jest"]
         }
       ],
       "outputs": [
