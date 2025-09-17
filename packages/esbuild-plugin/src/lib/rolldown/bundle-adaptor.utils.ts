@@ -7,6 +7,7 @@ import { MergeStrategyReverseLookup } from '../merge-strategy.utils';
 export function rolldownToEsbuildOutputs(rollupOutput: RolldownOutput['output'], { outputs }: Metafile, reverseLookup: MergeStrategyReverseLookup) {
     const newOutputFiles: OutputFile[] = [];
     const newMetafileOutputs: Metafile['outputs'] = {};
+    console.log(rollupOutput);
     rollupOutput
         .filter((output): output is OutputChunk => output.type === 'chunk')
         .forEach((output) => {

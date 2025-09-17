@@ -27,7 +27,8 @@
           }
         ],
         "styles": ["packages/kitchen-sink/src/styles.scss"],
-        "scripts": []
+        "scripts": [],
+        "plugins": ["packages/esbuild-plugin/src/index.ts"]
       },
       "configurations": {
         "production": {
