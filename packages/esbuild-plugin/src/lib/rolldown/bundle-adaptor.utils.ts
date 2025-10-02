@@ -4,35 +4,39 @@ import { OutputChunk, RolldownOutput } from 'rolldown';
 
 import { MergeStrategyReverseLookup } from '../merge-strategy.utils';
 
-export function rolldownToEsbuildOutputs(rollupOutput: RolldownOutput['output'], { outputs }: Metafile, reverseLookup: MergeStrategyReverseLookup) {
+export function rolldownToEsbuildOutputs(rollupOutput: RolldownOutput['output'], { outputs }: Metafile) {
     const newOutputFiles: OutputFile[] = [];
     const newMetafileOutputs: Metafile['outputs'] = {};
     console.log(rollupOutput);
-    rollupOutput
-        .filter((output): output is OutputChunk => output.type === 'chunk')
-        .forEach((output) => {
-            const file = toEsbuildOutputFile(output.fileName, output.code);
-            newOutputFiles.push(file);
-            newMetafileOutputs[output.fileName] = {
-                bytes: file.contents.length,
-                imports: mergedImports(output.imports, output.dynamicImports),
-                inputs: mergedInputs(Object.keys(output.modules).map((chunk) => {
-                    if (chunk === 'rolldown:runtime') {
-                      // TODO get real number
-                      return { [chunk]: { bytesInOutput: 0 }}
-                    }
-                    return outputs[chunk].inputs;
-                  })
-                ),
-                entryPoint: mergedEntryPoint(reverseLookup.get(output.facadeModuleId!)?.map((chunk) => outputs[chunk].entryPoint) ?? []),
-                exports: output.exports,
-            };
-            if (output.map && output.sourcemapFileName) {
-                const file = toEsbuildOutputFile(output.sourcemapFileName, output.map.toString());
-                newOutputFiles.push(file);
-                newMetafileOutputs[output.sourcemapFileName] = { imports: [], exports: [], inputs: {}, bytes: file.contents.length };
+  rollupOutput
+    .filter((output): output is OutputChunk => output.type === 'chunk')
+    .forEach((output) => {
+      const file = toEsbuildOutputFile(output.fileName, output.code);
+
+      newOutputFiles.push(file);
+      newMetafileOutputs[output.fileName] = {
+        bytes: file.contents.length,
+        imports: mergedImports(output.imports, output.dynamicImports),
+        inputs: mergedInputs(
+          output.moduleIds.map((chunk) => {
+            if (chunk === 'rolldown:runtime') {
+              // TODO get real number
+              return { [chunk]: { bytesInOutput: 0 } };
             }
-        });
+            return outputs[chunk].inputs;
+          }),
+        ),
+        exports: output.exports,
+      };
+      if (output.facadeModuleId) {
+        newMetafileOutputs[output.fileName].entryPoint = outputs[output.facadeModuleId].entryPoint;
+      }
+      if (output.map && output.sourcemapFileName) {
+        const file = toEsbuildOutputFile(output.sourcemapFileName, output.map.toString());
+        newOutputFiles.push(file);
+        newMetafileOutputs[output.sourcemapFileName] = { imports: [], exports: [], inputs: {}, bytes: file.contents.length };
+      }
+    });
     return { newOutputFiles, newMetafileOutputs };
 }
 
