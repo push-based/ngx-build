@@ -1,0 +1,70 @@
+---
+description:
+globs: 
+alwaysApply: false
+---
+{
+  "schema_version": "1.0",
+  "task": "Validate technical documents against codebase implementation",
+  "description": "Expert technical documentation auditor specializing in architecture-focused document validation. Performs deep semantic validation of technical documents against live codebase implementations, ensuring current accuracy and architectural alignment.",
+  "inputs": {
+    "documents": {
+      "required": true,
+      "desc": "Technical documents with architecture focus to be validated against the current codebase"
+    }
+  },
+  "phases": [
+    {
+      "id": 1,
+      "name": "Concept & Fact Extraction",
+      "requires_approval": false,
+      "response_format": "structured extraction with sections for Architectural Facts, Conceptual Claims, and Extraction Summary",
+      "steps": [
+        "Systematically analyze the provided document(s) and extract architectural facts (component structures, API endpoints, configuration patterns, integration points, data flow, technology stack assertions)",
+        "Extract conceptual claims (design patterns, behavioral specifications, performance characteristics, security mechanisms, workflow descriptions, feature capabilities)",
+        "Format output with numbered lists for facts and concepts, include extraction summary with totals and document scope",
+        "Use clear identifiers [FACT_ID] and [CONCEPT_ID] for systematic tracking in subsequent phases"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Deep Semantic Validation",
+      "requires_approval": false,
+      "response_format": "validation process documentation with tool usage and assessment methodology",
+      "steps": [
+        "For each extracted item, perform existence verification using codebase_search to locate relevant implementations, grep_search for specific patterns, and file_search for configuration files",
+        "Conduct semantic validation by reading actual implementation code using read_file, comparing documented behavior vs. actual implementation, verifying configuration requirements and API contracts",
+        "Apply accuracy assessment using five categories: ACCURATE (matches exactly), PARTIAL (exists but differs), OUTDATED (describes obsolete implementation), MISSING (not found), CONFLICTING (multiple contradictory implementations)",
+        "Follow systematic validation process: start with broad semantic searches, narrow to specific implementations, read relevant code sections thoroughly, cross-reference related components, assess current vs. documented state",
+        "Document validation methodology and findings for each fact/concept with specific evidence and tool usage"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Validation Reporting",
+      "requires_approval": true,
+      "response_format": "comprehensive validation report with summary statistics, detailed findings, and critical issues",
+      "steps": [
+        "Generate validation results summary with counts for each status category (Accurate, Partial, Outdated, Missing, Conflicting) using emoji indicators",
+        "Create detailed findings section for each fact/concept including: Status, Location (file path or 'Not found'), Details (specific explanation), Evidence (code snippets/search results), Discrepancy (if not accurate)",
+        "Highlight critical issues section focusing on major architectural misalignments or missing core components",
+        "Provide specific file paths and line numbers for evidence, include relevant code snippets, explain technical discrepancies clearly, prioritize architectural accuracy over minor details",
+        "Present complete validation report and ask for user confirmation before proceeding to correction suggestions phase"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Correction Suggestions",
+      "requires_approval": false,
+      "response_format": "document correction plan with prioritized fixes and implementation workflow",
+      "steps": [
+        "IMPORTANT: Only proceed if user explicitly confirmed from Phase 3 that they want correction suggestions",
+        "Create document correction plan with three priority levels: High Priority Fixes, Medium Priority Updates, Minor Clarifications",
+        "For each correction, specify: [Section] [Issue] → [Proposed correction] format",
+        "Include implementation notes covering: backup original document, update related documentation if cross-referenced, consider version/changelog implications",
+        "Present change application workflow: show proposed corrections clearly, ask for specific user approval for each change category, only apply changes after explicit confirmation, provide before/after comparisons for significant modifications",
+        "Follow user interaction guidelines: never apply document changes without explicit confirmation, ask clarifying questions if ambiguous, provide actionable specific recommendations"
+      ]
+    }
+  ]
+} 

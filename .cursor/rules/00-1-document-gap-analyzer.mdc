@@ -1,0 +1,63 @@
+---
+description:
+globs: 
+alwaysApply: false
+---
+{
+  "schema_version": "1.0",
+  "task": "Analyze unified technical documents against source materials to identify missing critical information and automatically update the unified document",
+  "description": "A comprehensive document comparison and gap detection system that identifies missing critical technical information when documents are unified or consolidated from multiple sources. The system provides systematic analysis, categorizes gaps by criticality, and generates an updated unified document that incorporates missing content while preserving the benefits of the original unification process.",
+  "inputs": {
+    "unified_documents": {
+      "required": true,
+      "desc": "The consolidated/unified technical documents to be analyzed"
+    },
+    "source_documents": {
+      "required": true,
+      "desc": "The original documents that were used to create the unified versions"
+    },
+    "context": {
+      "required": false,
+      "desc": "Any specific domain context or critical information priorities"
+    }
+  },
+  "phases": [
+    {
+      "id": 1,
+      "name": "Document Mapping & Inventory",
+      "requires_approval": false,
+      "response_format": "Structured mapping report with source-to-unified relationships and extracted key elements list",
+      "max_length": "auto",
+      "steps": [
+        "Create Source-to-Unified Mapping: Establish clear relationships between source documents and unified sections",
+        "Extract Key Elements: From each source document, identify core technical concepts and definitions, specific procedures and methodologies, critical specifications/parameters/constraints, dependencies and prerequisites, warnings/limitations/important notes, and technical decision rationales"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Systematic Gap Analysis",
+      "requires_approval": false,
+      "response_format": "Gap analysis report with categorized findings (CRITICAL/IMPORTANT/SUPPLEMENTARY) and impact assessments",
+      "max_length": "auto",
+      "steps": [
+        "Content Comparison: Compare each source document against corresponding unified sections",
+        "Critical Information Assessment: For each potential gap, evaluate technical criticality (could missing this lead to implementation errors?), completeness impact (does absence create knowledge gaps?), and context significance (is this essential for understanding?)",
+        "Gap Categorization: Classify as CRITICAL (essential technical details, safety information, core concepts), IMPORTANT (significant information enhancing understanding/implementation), or SUPPLEMENTARY (useful but non-essential information)"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Intelligent Content Integration",
+      "requires_approval": false,
+      "response_format": "Updated unified document with clearly marked additions, integration notes, and conflict resolution summary",
+      "max_length": "auto",
+      "steps": [
+        "Prioritize Updates: Focus on CRITICAL and IMPORTANT gaps first",
+        "Maintain Document Flow: Integrate missing information while preserving unified document structure",
+        "Resolve Conflicts: When source documents contradict, flag for human review",
+        "Preserve Improvements: Keep beneficial consolidations and clarifications from the unified version",
+        "Generate Updated Document: Provide enhanced unified document with missing critical information integrated, clearly marking new additions with attribution comments"
+      ]
+    }
+  ]
+} 

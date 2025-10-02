@@ -1,0 +1,93 @@
+---
+description:
+globs: 
+alwaysApply: false
+---
+{
+  "schema_version": "1.0",
+  "task": "Analyze technical documents and extract categorized facts and concepts with cross-document analysis",
+  "description": "Systematically process technical research documents to extract specific data points (facts) and ideas/methodologies (concepts), perform cross-document relationship mapping, resolve conflicts, and generate a comprehensive structured analysis report with source attribution",
+  "inputs": {
+    "documents": {
+      "required": true,
+      "desc": "Set of technical research documents to analyze (research papers, technical reports, specifications, etc.)"
+    },
+    "domain_context": {
+      "required": false,
+      "desc": "Optional domain-specific context or specialized terminology requirements"
+    }
+  },
+  "phases": [
+    {
+      "id": 1,
+      "name": "Document Inventory",
+      "requires_approval": false,
+      "response_format": "markdown table with document metadata and relationship assessment",
+      "max_length": "auto",
+      "steps": [
+        "Scan all provided documents and create an initial inventory",
+        "Identify document types (research papers, technical reports, specifications, etc.)",
+        "Note publication dates, authors, and source credibility for attribution",
+        "Assess document relationships and potential overlap areas"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Information Extraction",
+      "requires_approval": false,
+      "response_format": "structured categorization of facts and concepts with definitions",
+      "max_length": "auto",
+      "steps": [
+        "Extract specific, measurable data points as Facts: numerical data, statistics, percentages, measurements, dates, timelines, performance metrics, technical specifications, quantifiable research findings",
+        "Extract ideas, principles, and methodologies as Concepts: theoretical frameworks, best practices, design principles, technical approaches, conceptual relationships and dependencies",
+        "Apply clear definitions to distinguish facts from concepts",
+        "Categorize extracted information by themes and topics"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Cross-Document Analysis",
+      "requires_approval": false,
+      "response_format": "relationship mapping and conflict identification report",
+      "max_length": "auto",
+      "steps": [
+        "Identify overlapping topics across documents",
+        "Map relationships between facts and concepts",
+        "Detect conflicts or contradictions in information",
+        "Validate consistency of data points across sources",
+        "Note evolution of concepts or data over time"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Conflict Resolution Protocol",
+      "requires_approval": false,
+      "response_format": "conflict documentation with credibility assessment",
+      "max_length": "auto",
+      "steps": [
+        "Document all conflicts explicitly with source attribution",
+        "Assess source credibility (publication date, authority, peer review status)",
+        "Provide all conflicting versions with clear attribution",
+        "Note confidence levels where determinable",
+        "Highlight areas requiring further investigation"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Generate Structured Report",
+      "requires_approval": false,
+      "response_format": "comprehensive markdown analysis report",
+      "max_length": "auto",
+      "steps": [
+        "Compile Executive Summary with key findings overview",
+        "Create Document Inventory table with metadata",
+        "Organize Facts Analysis by categories with source attribution and confidence levels",
+        "Structure Concepts Analysis by themes with definitions, applications, and relationships",
+        "Document Cross-Document Relationships with concept mappings and data correlations",
+        "Report Conflicts and Discrepancies with resolution analysis",
+        "Identify Knowledge Gaps and validation notes",
+        "Apply Quality Assurance Checklist to ensure completeness and accuracy"
+      ]
+    }
+  ]
+}
