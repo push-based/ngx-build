@@ -12,6 +12,7 @@ export function mergeStrategy(
   metafile: Metafile
 ): Map<string, string[]> {
   const graph = generateBundleGraph(entryPointChunk, metafile);
+
   const indexedGraph = indexModuleGraph(graph);
   const entryClosure = computeEntryClosure(indexedGraph, entryPointChunk);
   const asyncClosures = computePerEntryClosures(
@@ -35,7 +36,6 @@ export function mergeStrategy(
     entryPointDAG,
     dominators
   );
-  const out = new Map<string, string[]>();
 
   // Collect all chunk ids we know about (even empty ones referenced by edges).
   const allChunkIds = new Set<string>();
@@ -66,6 +66,8 @@ export function mergeStrategy(
   for (const cid of allChunkIds) {
     if (!membersByChunk.has(cid)) membersByChunk.set(cid, new Set());
   }
+
+  const out = new Map<string, string[]>();
 
   // Convert to sorted arrays for MergeStrategyMap.
   for (const [cid, mods] of membersByChunk) {

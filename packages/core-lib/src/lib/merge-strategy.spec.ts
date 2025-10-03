@@ -1,20 +1,12 @@
 import { describe, it, expect } from 'vitest';
 
-import { loadStatsFile } from '../../test/utils';
+import { loadMockStats } from '../../test/utils';
 
 import { mergeStrategy } from './merge-strategy';
-import { getReachableVerticesFromImportStatements } from './utils/bundle-graph';
-import { Metafile } from 'esbuild';
+import { getReachableVertices, getReachableVerticesFromImportStatements } from './utils/bundle-graph';
 
-describe('mergeStrategy', () => {
-  const hostAppMetafile = loadStatsFile('./test/mocks/stats.json');
-  const entryPointChunk = 'main-WTKNYPAX.js';
-  const SPORTS_ENTRY_POINT =
-    'dist/build/packages/sports/web/libs/entrypoint-lib/esm2022/frontend-sports-web-entrypoint-lib.js';
-  const sportsEntryPoint = findEntryPointOutput(
-    SPORTS_ENTRY_POINT,
-    hostAppMetafile.outputs
-  )!;
+describe.only('mergeStrategy', () => {
+  const { stats: hostAppMetafile, entryPoint: entryPointChunk, sportsEntryPoint } = loadMockStats('./test/mocks/stats.json');
 
   it('should run', () => {
     const strategy = mergeStrategy(entryPointChunk, hostAppMetafile);
@@ -42,10 +34,12 @@ describe('mergeStrategy', () => {
 
     expect(strategy.has(`chunk:${sportsEntryPoint}`)).toBeDefined();
 
-    const initialChunks = getReachableVerticesFromImportStatements(
+    const initialChunks = getReachableVertices(
       entryPointChunk,
-      hostAppMetafile.outputs
+      hostAppMetafile.outputs,
+      (imp) => imp.path === sportsEntryPoint
     );
+  
     const sportsRootReachableChunks = getReachableVerticesFromImportStatements(
       sportsEntryPoint,
       hostAppMetafile.outputs
@@ -66,12 +60,3 @@ describe('mergeStrategy', () => {
     );
   });
 });
-
-function findEntryPointOutput(
-  entryPointPath: string,
-  metaFileOutputs: Metafile['outputs']
-) {
-  return Object.keys(metaFileOutputs).find(
-    (key) => metaFileOutputs[key].entryPoint === entryPointPath
-  );
-}
