@@ -2,7 +2,7 @@ import { Plugin } from 'esbuild';
 import { getAppEntryPoint } from './lib/esbuild.utils';
 import { rolldownToEsbuildOutputs } from './lib/rolldown/bundle-adaptor.utils';
 import { rolldownReBundle } from './lib/rolldown/rolldown.utils';
-import { mergeStrategyV2 } from './lib/merge-strategy-v2';
+import { mergeStrategy } from '@ngx-build/core-lib';
 
 export default function optimizeChunksPlugin(
   options: { main?: string; maxChunks?: number } = {}
@@ -22,7 +22,7 @@ export default function optimizeChunksPlugin(
         }
 
         const entryChunk = getAppEntryPoint(initialOptions, result.metafile);
-        const strategy = mergeStrategyV2(entryChunk, result.metafile);
+        const strategy = mergeStrategy(entryChunk, result.metafile);
         const reBundledOutput = await rolldownReBundle(
           entryChunk,
           result.outputFiles,
@@ -34,8 +34,8 @@ export default function optimizeChunksPlugin(
           result.metafile
         );
 
-        // result.metafile.outputs = newMetafileOutputs;
-        // result.outputFiles = newOutputFiles;
+        result.metafile.outputs = newMetafileOutputs;
+        result.outputFiles = newOutputFiles;
       });
     },
   };

@@ -83,3 +83,9 @@ We are working on extending the docs, in the meantime here are some resources wh
 - [Code splitting is creating many small unnecessary chunks](https://github.com/evanw/esbuild/issues/3780)
 - [Degraded Web Vitals (LCP, FCP) after switching a universal app to esbuild](https://github.com/angular/angular-cli/issues/27321)
 - [application builder generates many initial chunks](https://github.com/angular/angular-cli/issues/26307#issuecomment-1830438109)
+
+
+-- Compare output states of both bundles and identify where the additional sources are coming from. 
+
+-- Investigate potential issues with js transformer
+
