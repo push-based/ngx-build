@@ -1,39 +1,13 @@
 import { Metafile } from 'esbuild';
-import { generateBundleGraph } from './utils/bundle-graph';
-import { reachabilityStrategy } from './reachability-strategy';
-import { writeFileSync } from 'node:fs';
 
-const exclusionEntryPoints = [
-  'dist/build/packages/sports/web/libs/platform-lib/esm2022/lib/sport-tree/sport-tree.feature.js',
-  'dist/build/packages/sports/web/libs/platform-lib/esm2022/lib/geo-location/geo-location.feature.js',
-  'dist/build/packages/sports/web/libs/platform-lib/esm2022/lib/media/media.feature.js',
-  'dist/build/packages/sports/web/libs/platform-lib/esm2022/lib/minigames/minigames.feature.js',
-  'dist/build/packages/sports/web/libs/platform-lib/esm2022/lib/banner/banner-widget.feature.js',
-  'dist/build/packages/sports/web/libs/platform-lib/esm2022/lib/teaser/teaser.feature.js',
-  'dist/build/packages/sports/web/libs/platform-lib/esm2022/lib/popular-bets/popular-multi-bets-widget/popular-multi-bets.feature.js',
-  'dist/build/packages/sports/web/libs/platform-lib/esm2022/lib/main/main.component.js',
-  'dist/build/packages/sports/web/libs/platform-lib/esm2022/lib/panic-button/panic-button.feature.js',
-  'dist/build/packages/sports/web/libs/platform-lib/esm2022/lib/hidden-market/hidden-market.feature.js',
-  'dist/build/packages/sports/web/libs/platform-lib/esm2022/lib/bet-column/bet-column.feature.js',
-  'dist/build/packages/sports/web/libs/platform-lib/esm2022/lib/bet-generator-shared/bet-generator.feature.js',
-  'dist/build/packages/sports/web/libs/platform-lib/esm2022/lib/crm-promotion-widget/crm-promotion-widget.feature.js',
-  'dist/build/packages/sports/web/libs/platform-lib/esm2022/lib/favourites-widget/favourites-widget.feature.js',
-  'dist/build/packages/sports/web/libs/platform-lib/esm2022/lib/story-content/story-content.feature.js',
-  'dist/build/packages/sports/web/libs/platform-lib/esm2022/lib/standings/standings-widget.feature.js',
-  'dist/build/packages/sports/web/libs/platform-lib/esm2022/lib/calendar/time-filters-widget.feature.js',
-  'dist/build/packages/sports/web/libs/platform-lib/esm2022/lib/competition-list/top-items-widget.feature.js',
-  'dist/build/packages/sports/web/libs/platform-lib/esm2022/lib/quick-links/quick-links.feature.js',
-  'dist/build/packages/sports/web/libs/platform-lib/esm2022/lib/next-to-go/next-to-go.feature.js',
-  'dist/build/packages/sports/web/libs/platform-lib/esm2022/lib/priceboost/price-boost.feature.js',
-  'dist/build/packages/sports/web/libs/platform-lib/esm2022/lib/widget/composable/composable-widget.feature.js',
-  'dist/build/packages/sports/web/libs/platform-lib/esm2022/lib/outrights-grid/outrights-grid.feature.js',
-  'dist/build/packages/sports/web/libs/platform-lib/esm2022/lib/showcase/showcase.feature.js',
-  'dist/build/packages/sports/web/libs/platform-lib/esm2022/lib/tabbed-grid/tabbed-grid.feature.js',
-  'dist/build/packages/sports/web/libs/platform-lib/esm2022/lib/top-events/top-events.feature.js',
-  'dist/build/packages/sports/web/libs/platform-lib/esm2022/lib/highlights-marquee/highlights-marquee.feature.js',
-  'dist/build/packages/sports/web/libs/platform-lib/esm2022/lib/scoreboard-carousel/scoreboard-carousel.feature.js',
-  'dist/build/packages/sports/web/libs/platform-lib/esm2022/lib/betfinder-integration/betfinder-wrapper.component.js',
-]; //.map((p) => findEntryPointOutput(p, manifest.outputs));
+import {
+  applyLeafStrategy,
+  applyReachabilityStrategy,
+  getProductExclusionEntryPoints,
+  reachabilityStrategy,
+} from './reachability-strategy';
+import { generateBundleGraph } from './utils/bundle-graph';
+import { leafStrategy } from './leaf-strategy';
 
 export function mergeStrategy(
   entryPointChunk: string,
@@ -41,59 +15,138 @@ export function mergeStrategy(
 ): Map<string, string[]> {
   const graph = generateBundleGraph(entryPointChunk, metafile);
 
-  const excludedChunksFromReachability = exclusionEntryPoints.map(
-    (p) => findEntryPointOutput(p, metafile.outputs)!
-  );
+  const sportsEntry = findEntryPointOutput(
+    'dist/build/packages/sports/web/libs/entrypoint-lib/esm2022/frontend-sports-web-entrypoint-lib.js',
+    metafile.outputs
+  )!;
+
+  const excludedChunksFromReachability: string[] = [
+    ...getProductExclusionEntryPoints(entryPointChunk, sportsEntry, graph),
+  ];
 
   const _reachabilityStrategy = reachabilityStrategy(
     entryPointChunk,
     graph,
     excludedChunksFromReachability
   );
+
+  const graphAfterReachability = applyReachabilityStrategy(
+    graph,
+    _reachabilityStrategy
+  );
+
+  const sportsLeafStrategy = leafStrategy(
+    graphAfterReachability,
+    [sportsEntry],
+    metafile.outputs
+  );
+
+  // Step 2: Apply sports leaf strategy to update the graph
+  const graphAfterSportsLeaf = applyLeafStrategy(
+    graphAfterReachability,
+    sportsLeafStrategy
+  );
+
+  // Step 3: Apply leaf strategy to vanilla entry points on the updated graph
+  const vanillaEntryPoints: string[] = [
+    ...getProductExclusionEntryPoints(
+      entryPointChunk,
+      sportsEntry,
+      graphAfterSportsLeaf
+    ),
+  ].filter((excludeEntryPoint) =>
+    metafile.outputs[excludeEntryPoint].entryPoint!.includes(
+      '/packages/vanilla'
+    )
+  );
+
+  const vanillaLeafStrategy = leafStrategy(
+    graphAfterSportsLeaf,
+    vanillaEntryPoints,
+    metafile.outputs
+  );
+
+  // Step 4: Apply vanilla leaf strategy to get final graph
+  const graphAfterLeafStrategy = applyLeafStrategy(
+    graphAfterSportsLeaf,
+    vanillaLeafStrategy
+  );
+
+  // Merge all three strategies
+  let mergedStrategy = _reachabilityStrategy;
+  mergedStrategy = mergeTwoStrategies(mergedStrategy, sportsLeafStrategy);
+  mergedStrategy = mergeTwoStrategies(mergedStrategy, vanillaLeafStrategy);
+
+  // Validate and report statistics
   const assigned = new Set<string>();
-  let count = 0;
+  let reachabilityCount = 0;
   _reachabilityStrategy.forEach((group) => {
     group.forEach((c) => {
       if (assigned.has(c)) {
-        console.log('Something went wrong', c);
+        console.log('Something went wrong in reachability', c);
       }
       assigned.add(c);
     });
-    count = count + group.length - 1;
+    reachabilityCount = reachabilityCount + group.length - 1;
   });
+
+  let sportsLeafCount = 0;
+  sportsLeafStrategy.forEach((group) => {
+    group.forEach((c) => {
+      if (assigned.has(c)) {
+        console.log('Something went wrong in sports leaf strategy', c);
+      }
+      assigned.add(c);
+    });
+    sportsLeafCount = sportsLeafCount + group.length - 1;
+  });
+
+  let vanillaLeafCount = 0;
+  vanillaLeafStrategy.forEach((group) => {
+    group.forEach((c) => {
+      if (assigned.has(c)) {
+        console.log('Something went wrong in vanilla leaf strategy', c);
+      }
+      assigned.add(c);
+    });
+    vanillaLeafCount = vanillaLeafCount + group.length - 1;
+  });
+
   const chunkCount = Object.keys(graph).length;
   const entryChunkCount = Object.values(graph).filter(
     (c) => c.entryPoint
   ).length;
 
   console.log(
-    `Reachability strategy reduced ${count} chunks from ${chunkCount}\n` +
+    `Reachability strategy reduced ${reachabilityCount} chunks from ${chunkCount}`
+  );
+  console.log(
+    `Sports leaf strategy reduced ${sportsLeafCount} additional chunks`
+  );
+  console.log(
+    `Vanilla leaf strategy reduced ${vanillaLeafCount} additional chunks`
+  );
+  console.log(
+    `Total reduction: ${
+      reachabilityCount + sportsLeafCount + vanillaLeafCount
+    } chunks\n` +
       `There should be ${
-        chunkCount - count
+        chunkCount - reachabilityCount - sportsLeafCount - vanillaLeafCount
       } chunks remaining of which ${entryChunkCount} are entry points!`
   );
-  Object.keys(graph)
+
+  // Add unassigned chunks to the merged strategy
+  // Use the final graph state after both strategies have been applied
+  Object.keys(graphAfterLeafStrategy)
     .filter((c) => !assigned.has(c))
     .forEach((c) => {
-      // console.warn('Assigning missing chunk', c);
-
-      if (_reachabilityStrategy.has(c)) {
-        console.log(c);
-        throw new Error(c);
+      if (mergedStrategy.has(c)) {
+        throw new Error(`Chunk ${c} already in merged strategy`);
       }
-
-      _reachabilityStrategy.set(c, [c]);
+      mergedStrategy.set(c, [c]);
     });
 
-  const jsonMergeStrategies = JSON.stringify(
-    Object.fromEntries(_reachabilityStrategy),
-    null,
-    2
-  );
-
-  writeFileSync('strategy.json', jsonMergeStrategies, 'utf8');
-
-  return _reachabilityStrategy;
+  return mergedStrategy;
 }
 
 export function findEntryPointOutput(
@@ -103,4 +156,49 @@ export function findEntryPointOutput(
   return Object.keys(metaFileOutputs).find(
     (key) => metaFileOutputs[key].entryPoint === entryPointPath
   );
+}
+
+/**
+ * Merges two merge strategies together
+ * The second strategy takes precedence if there are overlaps
+ */
+function mergeTwoStrategies(
+  strategy1: Map<string, string[]>,
+  strategy2: Map<string, string[]>
+): Map<string, string[]> {
+  const merged = new Map<string, string[]>();
+
+  // Add all entries from strategy1
+  for (const [key, value] of strategy1) {
+    merged.set(key, [...value]);
+  }
+
+  // Add all entries from strategy2
+  // If a node was already assigned in strategy1, we need to handle it
+  const nodesInStrategy1 = new Set<string>();
+  for (const [, nodes] of strategy1) {
+    nodes.forEach((node) => nodesInStrategy1.add(node));
+  }
+
+  for (const [key, nodes] of strategy2) {
+    // Check if any nodes in this group were already assigned
+    const alreadyAssigned = nodes.filter((node) => nodesInStrategy1.has(node));
+
+    if (alreadyAssigned.length > 0) {
+      console.log(
+        `Warning: Nodes already assigned in strategy1:`,
+        alreadyAssigned
+      );
+      // Skip nodes that were already assigned
+      const newNodes = nodes.filter((node) => !nodesInStrategy1.has(node));
+      if (newNodes.length > 0) {
+        merged.set(key, newNodes);
+      }
+    } else {
+      // No overlap, add the group as-is
+      merged.set(key, [...nodes]);
+    }
+  }
+
+  return merged;
 }

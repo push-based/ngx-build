@@ -3,11 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { loadMockStats } from '../../test/utils';
 
 import { mergeStrategy } from './merge-strategy';
-import {
-  getReachableVertices,
-  getReachableVerticesFromImportStatements,
-} from './utils/bundle-graph';
-import { Metafile } from 'esbuild';
+import { getReachableVerticesFromImportStatements } from './utils/bundle-graph';
 
 describe('mergeStrategy', () => {
   const {
@@ -22,80 +18,41 @@ describe('mergeStrategy', () => {
     expect(strategy).toBeDefined();
   });
 
-  it.skip('should reduce root as expected', () => {
+  it('should reduce root as expected', () => {
     // as this is the root we expect it to pull all initial values
     const strategy = mergeStrategy(entryPointChunk, hostAppMetafile);
 
-    expect(strategy.has(`chunk:${entryPointChunk}`)).toBeDefined();
+    const rootStrategy = strategy.get(entryPointChunk);
+    expect(rootStrategy).toBeTruthy();
 
     const initialChunks = getReachableVerticesFromImportStatements(
       entryPointChunk,
       hostAppMetafile.outputs
     );
 
-    expect(strategy.get(`chunk:${entryPointChunk}`)?.length).toBe(
-      initialChunks.length
-    );
+    expect(rootStrategy?.length).toBe(initialChunks.length);
+    expect(rootStrategy).toContain(entryPointChunk);
   });
 
-  it.skip('should reduce sports as expected', () => {
+  it('should reduce sports as expected', () => {
     const strategy = mergeStrategy(entryPointChunk, hostAppMetafile);
 
-    expect(strategy.has(`chunk:${sportsEntryPoint}`)).toBeDefined();
+    const sportsEntryStrategy = strategy.get(sportsEntryPoint);
+    expect(sportsEntryStrategy).toBeTruthy();
 
-    const initialChunks = getReachableVertices(
+    const initialChunks = getReachableVerticesFromImportStatements(
       entryPointChunk,
-      hostAppMetafile.outputs,
-      (imp) => imp.path === sportsEntryPoint
+      hostAppMetafile.outputs
     );
+    const initialSportsChunks = getReachableVerticesFromImportStatements(
+      sportsEntryPoint,
+      hostAppMetafile.outputs
+    );
+    // expect(initialSportsChunks.length).toBe(10);
 
-    expect(
-      strategy.get(`chunk:${sportsEntryPoint}`)!.some((c) => {
-        return initialChunks.includes(c);
-      })
-    ).toBe(false);
-  });
-
-  it.skip('should merge shared root modules', () => {
-    const mockMetafile: Metafile = {
-      inputs: {},
-      outputs: {
-        'main.js': {
-          imports: [
-            { path: 'chunk-a.js', kind: 'import-statement' },
-            { path: 'chunk-b.js', kind: 'import-statement' },
-          ],
-          exports: [],
-          entryPoint: 'src/main.ts',
-          inputs: {},
-          bytes: 1000,
-        },
-        'chunk-a.js': {
-          imports: [{ path: 'chunk-c.js', kind: 'import-statement' }],
-          exports: [],
-          inputs: {},
-          bytes: 500,
-        },
-        'chunk-b.js': {
-          imports: [],
-          exports: [],
-          inputs: {},
-          bytes: 300,
-        },
-        'chunk-c.js': {
-          imports: [],
-          exports: [],
-          inputs: {},
-          bytes: 200,
-        },
-      },
-    };
+    expect(sportsEntryStrategy!.some((c) => initialChunks.includes(c))).toBe(
+      false
+    );
+    // expect(sportsEntryStrategy?.length).toBe(10);
   });
 });
-
-const IMPORT_TYPE = {
-  IMPORT_STATEMENT: 'import-statement',
-  DYNAMIC_IMPORT: 'dynamic-import',
-};
-
-const mockOutput = () => {};

@@ -92,7 +92,7 @@ export function reachabilityStrategy(
   return mergeGroups;
 }
 
-function getReachableVertices(
+export function getReachableVertices(
   entryPoint: OutputPath,
   graph: ModuleGraph,
   traversalExclusionFn?: (moduleImport: ModuleImport) => boolean
@@ -154,4 +154,119 @@ function getReachableVerticesWithEntryPointExclusions(
     }
   }
   return reachableVertices;
+}
+
+export function getProductExclusionEntryPoints(
+  mainEntryPoint: string,
+  productEntryPoint: string,
+  graph: ModuleGraph
+) {
+  const rootClosure = getReachableVertices(
+    mainEntryPoint,
+    graph,
+    (imp) => imp.kind !== 'import-statement'
+  );
+
+  const exclude = new Set<OutputPath>();
+  for (const vertex of rootClosure) {
+    for (const imps of graph[vertex].imports) {
+      if (imps.kind === 'dynamic-import' && productEntryPoint !== imps.path) {
+        exclude.add(imps.path);
+      }
+    }
+  }
+  return exclude;
+}
+
+export function applyReachabilityStrategy(
+  graph: ModuleGraph,
+  reachabilityStrategy: Map<string, string[]>
+) {
+  const deletedNodes = new Set<string>();
+  const updatedGraph = structuredClone(graph);
+
+  // Iterate over the strategy
+  for (const [key, nodes] of reachabilityStrategy) {
+    for (const node of nodes) {
+      // If node is same as key, do nothing
+      if (node === key) {
+        continue;
+      }
+
+      // Delete node from graph
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      delete updatedGraph[node];
+
+      // Save into deleted nodes set
+      deletedNodes.add(node);
+    }
+  }
+
+  // Iterate over graph and remove all imports to deleted nodes
+  for (const nodePath of Object.keys(updatedGraph)) {
+    const module = updatedGraph[nodePath];
+
+    // Filter out imports that reference deleted nodes
+    module.imports = module.imports.filter(
+      (imp) => !deletedNodes.has(imp.path)
+    );
+  }
+  return updatedGraph;
+}
+
+/**
+ * Apply leaf strategy to the module graph
+ * Removes merged leaf nodes and redirects imports to the primary node in each group
+ */
+export function applyLeafStrategy(
+  graph: ModuleGraph,
+  leafStrategy: Map<string, string[]>
+) {
+  const deletedNodes = new Set<string>();
+  const nodeMapping = new Map<string, string>(); // Maps deleted node -> primary node
+  const updatedGraph = structuredClone(graph);
+
+  // Build mapping and delete merged nodes
+  for (const [primaryNode, nodes] of leafStrategy) {
+    for (const node of nodes) {
+      // If node is same as primary, skip it
+      if (node === primaryNode) {
+        continue;
+      }
+
+      // Map this node to the primary node
+      nodeMapping.set(node, primaryNode);
+
+      // Delete node from graph
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      delete updatedGraph[node];
+
+      // Save into deleted nodes set
+      deletedNodes.add(node);
+    }
+  }
+
+  // Iterate over graph and update imports
+  for (const nodePath of Object.keys(updatedGraph)) {
+    const module = updatedGraph[nodePath];
+
+    // Update imports: redirect to primary node or remove if deleted
+    module.imports = module.imports
+      .map((imp) => {
+        // If import points to a deleted node, redirect to primary node
+        if (nodeMapping.has(imp.path)) {
+          return {
+            ...imp,
+            path: nodeMapping.get(imp.path)!,
+          };
+        }
+        return imp;
+      })
+      .filter((imp, index, self) => {
+        // Remove duplicates (same path after mapping)
+        return index === self.findIndex((i) => i.path === imp.path);
+      });
+  }
+
+  return updatedGraph;
 }
