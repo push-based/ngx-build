@@ -1,0 +1,107 @@
+{
+  "name": "kitchen-sink-application-builder",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "prefix": "app",
+  "sourceRoot": "packages/kitchen-sink/application-builder/src",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/angular:application",
+      "outputs": ["{options.outputPath.base}"],
+      "options": {
+        "statsJson": true,
+        "outputPath": {
+          "base": "dist/packages/kitchen-sink/application-builder"
+        },
+        "index": "packages/kitchen-sink/application-builder/src/index.html",
+        "browser": "packages/kitchen-sink/application-builder/src/main.ts",
+        "polyfills": ["zone.js"],
+        "tsConfig": "packages/kitchen-sink/application-builder/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "namedChunks": true,
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "packages/kitchen-sink/application-builder/public"
+          }
+        ],
+        "styles": ["packages/kitchen-sink/application-builder/src/styles.scss"],
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "2kb",
+              "maximumError": "4kb"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "executor": "@nx/angular:dev-server",
+      "configurations": {
+        "production": {
+          "buildTarget": "kitchen-sink-application-builder:build:production"
+        },
+        "development": {
+          "buildTarget": "kitchen-sink-application-builder:build:development"
+        }
+      },
+      "defaultConfiguration": "development",
+      "continuous": true
+    },
+    "extract-i18n": {
+      "executor": "@angular-devkit/build-angular:extract-i18n",
+      "options": {
+        "buildTarget": "kitchen-sink-application-builder:build"
+      }
+    },
+    "test": {
+      "inputs": [
+        "default",
+        "^default",
+        "{workspaceRoot}/jest.preset.js",
+        {
+          "externalDependencies": ["jest"]
+        }
+      ],
+      "outputs": [
+        "{workspaceRoot}/coverage/{projectRoot}",
+        "{workspaceRoot}\\coverage\\packages\\kitchen-sink"
+      ],
+      "options": {
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "coverage": true
+        }
+      }
+    },
+    "serve-static": {
+      "executor": "@nx/web:file-server",
+      "dependsOn": ["build"],
+      "options": {
+        "buildTarget": "kitchen-sink-application-builder:build:production",
+        "spa": true,
+        "staticFilePath": "dist/packages/kitchen-sink/application-builder/browser/"
+      }
+    }
+  }
+}
