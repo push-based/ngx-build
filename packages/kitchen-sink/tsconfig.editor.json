@@ -1,8 +1,0 @@
-{
-  "extends": "./tsconfig.json",
-  "files": ["esbuild-plugin.ts"],
-  "compilerOptions": {
-    "strict": false,
-  },
-  "exclude": ["jest.config.ts", "src/**/*.test.ts", "src/**/*.spec.ts"]
-}
