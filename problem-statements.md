@@ -65,3 +65,77 @@ TODO explain the config and why its necessary
 
 Yet, this still does not work when rebundling an angular application, because of that we require analyzing the module
 graph ourselves and create an advance chunking strategy based on this strategy.
+
+### Bundlers 
+TODO baseline documation on bundlers 
+
+### Document bundle issues 
+TODO
+- Chunk size
+- Single chunk
+- bundling vs transpailing 
+- bundling performance 
+- typechecking
+
+
+## Research
+
+### Query imports
+Query via import attributes (TODO explain)
+
+### Simulation
+
+### Investigate QWIK Bundle strategies
+https://qwik.dev/
+
+### Issue and knowledge base list
+
+| Idea                                                         | Number of Bundles | Bundle Size | Build Time | Caching | Maintainability | DX (Configurability) | Notes / Explanation                                                                                                                                                                                                                                                     |
+| ------------------------------------------------------------ | ----------------- | ----------- | ---------- | ------- | --------------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Merging bootstrap imports into main (or by reachability)** | ++                | ++          | +          | --      | -               | +                    | Great for merging early bootstrap deps and reducing chunk count. Increases cache busting because main bundle changes more often. Slightly harder long-term maintenance because of tighter coupling.                                                                     |
+| **Import Attributes**                                        | 0                 | 0           | +          | +       | +               | ++                   | Mostly neutral for bundles, but improves clarity of static/server config. Helpful for SSR/CSR divergence flags. Very high DX because config becomes explicit.                                                                                                           |
+| **Pre-bundling libs**                                        | +                 | +           | ++         | -       | -               | +                    | Tremendously speeds up incremental + cold builds by avoiding repeated transforms. But requires a dependency graph upfront (e.g., lockfile hashing). Maintenance cost because pre-bundle must be kept in sync.                                                           |
+| **Dynamic entry-point merging**                              | ++                | +           | -          | --      | --              | -                    | Removes the limitation of “1 chunk per dynamic import”, allowing smarter merging by heuristics. But requires multi-layer bundling pipelines, complex logic, and causes cache ripple effects when dynamic entrypoints merge/split. Lower DX due to debugging complexity. |
+
+
+- Merging bootstrap imports into main (Or by Reachability)
+**Impact**
+Reduce bundle chunks
+Reduce bundle size
+
+**Problems**
+Increase cache invalidation
+
+- Import Attributes
+
+**Impact**
+Simplify static config
+
+**Problems**
+
+
+- Pre-bundling libs
+
+**Impact**
+Reduce build time
+
+**Problems**
+Requires pre-computing dependency tree
+
+
+- Dynamic Entry point merging
+
+**Impact**
+Removes limitation of one chunk per dynamic import
+
+**Problem**
+Requires multiple layers of bundling 
+
+- Preload Module Map
+
+Use the import attributes ot generate a map of assets which can be used to make some smart preloading
+
+The import map would collect the list of features and assets making them available as a map so that we can manually import them at runtime to do some smart preloading. 
+This could also be done on the server to add the features directly on the HTML as a preload tag.
+
+
