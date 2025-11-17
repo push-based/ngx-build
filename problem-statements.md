@@ -27,7 +27,6 @@ graph TD
     main --> shared
     dynamic --> shared
     main -.-> dynamic
-
 ```
 TODO add visual
 
@@ -81,50 +80,52 @@ graph TD
     main.ts
     dynamic1.ts
     dynamic2.ts
-    shared1.ts
-    shared2.ts
+    dynamic3.ts
     static1.ts
     static2.ts
+    static3.ts
+    static4.ts
 
     subgraph main.js
         main.ts
     end
-
     subgraph dynamic1.js
         dynamic1.ts
     end
-
     subgraph dynamic2.js
         dynamic2.ts
     end
-
-    subgraph shared1.js
-        shared1.ts
+    subgraph dynamic3.js
+        dynamic3.ts
     end
-
-    subgraph shared2.js
-        shared2.ts
-    end
-
     subgraph static1.js
         static1.ts
     end
-
     subgraph static2.js
         static2.ts
+    end
+    subgraph static3.js
+        static3.ts
+    end
+    subgraph static4.js
+        static4.ts
     end
 
     main.js -.-> dynamic1.js
     main.js -.-> dynamic2.js
-
-    dynamic1.js --> shared1.js
-    dynamic2.js --> shared1.js
-
-    dynamic1.js --> shared2.js
-    dynamic2.js --> shared2.js
+    main.js -.-> dynamic3.js
 
     dynamic1.js --> static1.js
+    dynamic1.js --> static2.js
+    dynamic1.js --> static3.js
+
+    dynamic2.js --> static1.js
     dynamic2.js --> static2.js
+    dynamic2.js --> static3.js
+
+    dynamic3.js --> static1.js
+    dynamic3.js --> static2.js
+    dynamic3.js --> static4.js
 ```
 
 **AFTER**
@@ -326,4 +327,6 @@ Use the import attributes ot generate a map of assets which can be used to make 
 The import map would collect the list of features and assets making them available as a map so that we can manually import them at runtime to do some smart preloading. 
 This could also be done on the server to add the features directly on the HTML as a preload tag.
 
-
+- Typesafe by extending global scope
+We can likely extend the type of import attributes to make it more type safe and give autocomplete by extending the global scope.
+Consider reviewing the example of ts-reset
