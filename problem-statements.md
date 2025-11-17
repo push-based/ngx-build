@@ -56,6 +56,147 @@ graph TD
     G2 --> G1
 ```
 
+### Common Strategy
+
+TODO explain common strategy
+```
+// main.ts
+import('dynamic1');
+import('dynamic2');
+
+// dynamic1.ts
+import './shared1.ts';
+import './shared2.ts';
+import './static1.ts':
+
+// dynamic2.ts
+import './shared1.ts';
+import './shared2.ts';
+import './static2.ts':
+```
+
+**Transpiled TS-JS**
+```mermaid
+graph TD
+    main.ts
+    dynamic1.ts
+    dynamic2.ts
+    shared1.ts
+    shared2.ts
+    static1.ts
+    static2.ts
+
+    subgraph main.js
+        main.ts
+    end
+
+    subgraph dynamic1.js
+        dynamic1.ts
+    end
+
+    subgraph dynamic2.js
+        dynamic2.ts
+    end
+
+    subgraph shared1.js
+        shared1.ts
+    end
+
+    subgraph shared2.js
+        shared2.ts
+    end
+
+    subgraph static1.js
+        static1.ts
+    end
+
+    subgraph static2.js
+        static2.ts
+    end
+
+    main.js -.-> dynamic1.js
+    main.js -.-> dynamic2.js
+
+    dynamic1.js --> shared1.js
+    dynamic2.js --> shared1.js
+
+    dynamic1.js --> shared2.js
+    dynamic2.js --> shared2.js
+
+    dynamic1.js --> static1.js
+    dynamic2.js --> static2.js
+```
+
+**AFTER**
+```
+// main.ts
+import(
+    'dynamic1',
+    { 
+      "tag": "EntryPointMapKey",
+      "bundle": "common",
+      "target": "imports" 
+    }
+);
+import(
+    'dynamic2',
+    { 
+      "tag": "EntryPointMapKey",
+      "bundle": "common",
+      "target": "imports" 
+    }
+);
+
+// dynamic1.ts
+import './shared1.ts';
+import './shared2.ts';
+import './static1.ts':
+
+// dynamic2.ts
+import './shared1.ts';
+import './shared2.ts';
+import './static2.ts':
+```
+
+```mermaid
+graph TD
+    main.ts
+    dynamic1.ts
+    dynamic2.ts
+    shared1.ts
+    shared2.ts
+    static1.ts
+    static2.ts
+
+    subgraph main.js
+        main.ts
+    end
+    subgraph dynamic1.js
+        dynamic1.ts
+    end    
+    subgraph dynamic2.js
+        dynamic2.ts
+    end
+    subgraph common.js
+        shared1.ts
+        shared2.ts
+    end
+    subgraph static1.js
+        static1.ts
+    end
+    subgraph static2.js
+        static2.ts
+    end
+
+    main.js -.-> dynamic1.js
+    main.js -.-> dynamic2.js
+    dynamic1.js --> common.js
+    dynamic2.js --> common.js
+    dynamic1.js --> static1.js
+    dynamic2.js --> static2.js
+```
+
+
 #### Rolldown considerations
 
 This is achievable with rolldown and would usually be the default behaviour. However, there are a couple caviates and
@@ -97,6 +238,10 @@ https://qwik.dev/
 | **Pre-bundling libs**                                        | +                 | +           | ++         | -       | -               | +                    | Tremendously speeds up incremental + cold builds by avoiding repeated transforms. But requires a dependency graph upfront (e.g., lockfile hashing). Maintenance cost because pre-bundle must be kept in sync.                                                           |
 | **Dynamic entry-point merging**                              | ++                | +           | -          | --      | --              | -                    | Removes the limitation of “1 chunk per dynamic import”, allowing smarter merging by heuristics. But requires multi-layer bundling pipelines, complex logic, and causes cache ripple effects when dynamic entrypoints merge/split. Lower DX due to debugging complexity. |
 
+### Cache persistance
+
+Spliting the main outside of its self and treating it as external will allow it to be cached across entry points (main.js, sports.js)
+
 
 - Merging bootstrap imports into main (Or by Reachability)
 **Impact**
@@ -107,6 +252,49 @@ Reduce bundle size
 Increase cache invalidation
 
 - Import Attributes
+
+```json-c
+{ 
+    "with": { 
+      "tag": "EntryPointMapKey", # Adds an entry to the optimized bundle to allow referencing by tag name instead of input
+    }
+},
+{ 
+    "with": { 
+      "tag": "EntryPointMapKey",
+      "bundle": "common", # File pulled from this entry point will be bundle into a bundle with the name of the key
+      "target": "entry" 
+    }
+},
+{ 
+    "with": { 
+      "tag": "EntryPointMapKey",
+      "bundle": "common",
+      "target": "imports" 
+    }
+},
+{ 
+    "with": { 
+      "tag": "EntryPointMapKey",
+      "bundle": "common", # File pulled from this entry point will be bundle into a bundle with the name of the key
+    }
+},
+# TODO example
+{
+    "with": { 
+      "tag": "EntryPointMapKey",
+      "strategy": "excluded-common", # Excluded from common bundle
+    }
+},
+# Ask Voito about magic comments
+{
+    "with": { 
+      "tag": "EntryPointMapKey",
+      "strategy": "preload", # Adds a preload tag to index.html
+      "fetch-priority": "high"
+    }
+}
+```
 
 **Impact**
 Simplify static config
