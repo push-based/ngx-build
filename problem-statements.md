@@ -55,26 +55,34 @@ graph TD
     G2 --> G1
 ```
 
-### Common Strategy
+### Transpiled TS-JS
 
-TODO explain common strategy
-```
+#### Transpiled Source
+
+```ts
 // main.ts
-import('dynamic1');
-import('dynamic2');
+import('./dynamic1');
+import('./dynamic2');
+import('./dynamic3');
 
 // dynamic1.ts
-import './shared1.ts';
-import './shared2.ts';
-import './static1.ts':
+import './static1';
+import './static2';
+import './static3';
 
 // dynamic2.ts
-import './shared1.ts';
-import './shared2.ts';
-import './static2.ts':
+import './static1';
+import './static2';
+import './static3';
+
+// dynamic3.ts
+import './static1';
+import './static2';
+import './static4';
 ```
 
-**Transpiled TS-JS**
+#### Transpiled Output 
+
 ```mermaid
 graph TD
     main.ts
@@ -128,36 +136,284 @@ graph TD
     dynamic3.js --> static4.js
 ```
 
-**AFTER**
+### `include` property
+
+The include property can be used to explicitly pull certain imports into a shared “bucket” (entry-point group), e.g. common. This is useful for shared code that should live in a dedicated chunk instead of being duplicated across multiple dynamic entry points.
+
+#### Include Types
+
+```ts
+
+export type IncudeStrategy = |
+  // optimize bundling per view / route
+  | 'withSharedDeps' // The static imports of the files which are the same as all the bundles with the same name
+  | 'withAllDeps'; // The static imports of the files regardless of if they are shared by other bundle with the same name
+
+extends type IncludesAttributeOptions = {
+  /**
+   * Registers the imported file into a map that will allow pointing the them externally
+   * bundle-optimization-map.json
+   * {
+   *   "sports-root-route": {
+   *    "inputFile": "sports.ts"
+   *    "outputFile": "sports-XXXXXX.js"
+   *   }
+   * }
+   * 
+   * This will make it easier to reference imports post bundling by using a tag instead of seaching for them via the 
+   * esbuild stats json with a mapped output path.
+   * Additionally it can be used for preloading or getting the reference of the feature
+   * There can only be one tag per output path
+   */
+  entryPointTag?: string; // Shortend to reference an entry point (used later on future optimizations) TODO reference them
+  chunkName?: string; // slug of the bundle this import and/or its deps should end up in
+  include?: IncudeStrategy, // defaults to withSharedDeps
+};
 ```
+
+#### Include Source V1
+
+```ts
 // main.ts
-import(
-    'dynamic1',
-    { 
-      "tag": "EntryPointMapKey",
-      "bundle": "common",
-      "target": "imports" 
-    }
-);
-import(
-    'dynamic2',
-    { 
-      "tag": "EntryPointMapKey",
-      "bundle": "common",
-      "target": "imports" 
-    }
-);
+import('./dynamic1', { "with": { "entryPointTag": "EntryPointMapKey", "chunkName": "common" } });
+import('./dynamic2', { "with": { "entryPointTag": "EntryPointMapKey", "chunkName": "common" } });
+import('./dynamic3', { "with": { "entryPointTag": "EntryPointMapKey", "chunkName": "common" } });
 
 // dynamic1.ts
-import './shared1.ts';
-import './shared2.ts';
-import './static1.ts':
+import './static1';
+import './static2';
+import './static3';
 
 // dynamic2.ts
-import './shared1.ts';
-import './shared2.ts';
-import './static2.ts':
+import './static1';
+import './static2';
+import './static3';
+
+// dynamic3.ts
+import './static1';
+import './static2';
+import './static4';
 ```
+
+#### Include Output V1
+
+```mermaid
+graph TD
+    main.ts
+    dynamic1.ts
+    dynamic2.ts
+    dynamic3.ts
+    static1.ts
+    static2.ts
+    static3.ts
+    static4.ts
+
+    subgraph main.js
+        main.ts
+    end
+    subgraph dynamic1.js
+        dynamic1.ts
+    end
+    subgraph dynamic2.js
+        dynamic2.ts
+    end
+    subgraph dynamic3.js
+        dynamic3.ts
+    end
+    subgraph static4.js
+        static4.ts
+    end
+    
+    subgraph common.js
+        static1.ts
+        static2.ts
+        static3.ts
+    end
+
+    main.js -.-> dynamic1.js
+    main.js -.-> dynamic2.js
+    main.js -.-> dynamic3.js
+
+    dynamic1.js --> common.js
+
+    dynamic2.js --> common.js
+
+    dynamic3.js --> common.js
+    dynamic3.js --> static4.js
+```
+
+#### Include Source V2
+
+TODO explain use case for 'withAllDeps';
+```ts
+// main.ts
+import('./dynamic1', { "with": { "entryPointTag": "EntryPointMapKey", "chunkName": "common" } });
+import('./dynamic2', { "with": { "entryPointTag": "EntryPointMapKey", "chunkName": "common",  "include": "withAllDeps"} });
+import('./dynamic3', { "with": { "entryPointTag": "EntryPointMapKey", "chunkName": "common" } });
+
+// dynamic1.ts
+import './static1';
+import './static2';
+import './static3';
+
+// dynamic2.ts
+import './static1';
+import './static2';
+import './static3';
+
+// dynamic3.ts
+import './static1';
+import './static2';
+import './static4';
+```
+
+#### Include Output V2
+
+```mermaid
+graph TD
+    main.ts
+    dynamic1.ts
+    dynamic2.ts
+    dynamic3.ts
+    static1.ts
+    static2.ts
+    static3.ts
+    static4.ts
+
+    subgraph main.js
+        main.ts
+    end
+    subgraph dynamic1.js
+        dynamic1.ts
+    end
+    subgraph dynamic2.js
+        dynamic2.ts
+    end
+    subgraph dynamic3.js
+        dynamic3.ts
+        
+    end
+    subgraph static3.js
+        static3.ts
+    end
+    subgraph static4.js
+        static4.ts
+    end
+    
+    subgraph common.js
+        static1.ts
+        static2.ts
+        static3.ts
+    end
+
+    main.js -.-> dynamic1.js
+    main.js -.-> dynamic2.js
+    main.js -.-> dynamic3.js
+
+    dynamic1.js --> common.js
+
+    dynamic2.js --> common.js
+    dynamic2.js --> static3.js
+
+    dynamic3.js --> common.js
+    dynamic3.js --> static4.js
+```
+
+
+#### Include Output
+
+
+```mermaid
+graph TD
+    main.ts
+    dynamic1.ts
+    dynamic2.ts
+    dynamic3.ts
+    static1.ts
+    static2.ts
+    static3.ts
+    static4.ts
+
+    subgraph main.js
+        main.ts
+    end
+    subgraph dynamic1.js
+        dynamic1.ts
+    end
+    subgraph dynamic2.js
+        dynamic2.ts
+    end
+    subgraph dynamic3.js
+        dynamic3.ts
+        
+    end
+    subgraph static3.js
+        static3.ts
+    end
+    subgraph static4.js
+        static4.ts
+    end
+    
+    subgraph common.js
+        static1.ts
+        static2.ts
+        static3.ts
+    end
+
+    main.js -.-> dynamic1.js
+    main.js -.-> dynamic2.js
+    main.js -.-> dynamic3.js
+
+    dynamic1.js --> common.js
+
+    dynamic2.js --> common.js
+    dynamic2.js --> static3.js
+
+    dynamic3.js --> common.js
+    dynamic3.js --> static4.js
+```
+
+### `exclude` property**
+
+The exclude property does the opposite of include: it prevents an import from being pulled into a given shared entry-point group, even if it would normally qualify (for example, because it’s imported from multiple dynamic entry points).
+
+This is useful when some imports are shared but should still remain “local” to their entry point (e.g. feature-specific code), while other imports go to a common chunk.
+
+
+#### Exclude Types
+
+```ts
+export type ExcludeStrategy = |
+  // optimize bundling per view / route
+  'withDeps' // The direct static imports of the file, not its children
+  | 'withStartupDeps' // The static imports of the file including its children
+  | 'withAllDeps'; // The static and dynamic imports of the file including its children
+
+extends type ExcludeAttributeOptions = {
+  exclude: ExcludeStrategy,
+};
+```
+
+#### Exclude Source
+
+```ts
+// main.ts
+// main.ts
+import('./dynamic1');
+import('./dynamic2');
+
+// dynamic1.ts
+import './shared1' with { "tag": "EntryPointMapKey", "include": "common" }
+import './shared2';
+import './static1';
+
+// dynamic2.ts
+import './shared1' with { "tag": "EntryPointMapKey", "include": "common" }
+import './shared2' with { "tag": "EntryPointMapKey", "include": "common" }
+import './static2';
+```
+
+#### Exclude Output
 
 ```mermaid
 graph TD
@@ -174,7 +430,7 @@ graph TD
     end
     subgraph dynamic1.js
         dynamic1.ts
-    end    
+    end
     subgraph dynamic2.js
         dynamic2.ts
     end
@@ -191,8 +447,10 @@ graph TD
 
     main.js -.-> dynamic1.js
     main.js -.-> dynamic2.js
+
     dynamic1.js --> common.js
     dynamic2.js --> common.js
+
     dynamic1.js --> static1.js
     dynamic2.js --> static2.js
 ```
