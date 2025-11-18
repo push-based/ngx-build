@@ -109,12 +109,6 @@ graph TD
     dynamic2.js --> static3.js
 ```
 
-### Bundling with Angular and esbuild
-
-TODO showcase angular behaviour
-
----
-
 ## State of the art
 
 TODO explain reachability strategy
