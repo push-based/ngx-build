@@ -22,24 +22,21 @@ import { ModuleGraph, OutputPath } from './bundle-graph';
  * topologicalSort(graph, 'A');
  * // → ['C', 'B', 'A']
  */
-export function topologicalSort(
-  graph: ModuleGraph,
-  entry: OutputPath
-): OutputPath[] {
-  const visited = new Set<OutputPath>();
-  const order: OutputPath[] = [];
+export function topologicalSort(graph: ModuleGraph, entry: OutputPath): OutputPath[] {
+    const visited = new Set<OutputPath>();
+    const order: OutputPath[] = [];
 
-  function dfs(node: OutputPath) {
-    if (visited.has(node)) return;
-    visited.add(node);
+    function dfs(node: OutputPath) {
+        if (visited.has(node)) return;
+        visited.add(node);
 
-    for (const imp of graph[node].imports) {
-      dfs(imp.path);
+        for (const imp of graph[node].imports) {
+            dfs(imp.path);
+        }
+
+        order.push(node);
     }
 
-    order.push(node);
-  }
-
-  dfs(entry);
-  return order;
+    dfs(entry);
+    return order;
 }
