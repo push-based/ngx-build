@@ -50,7 +50,8 @@ graph TD
 ```
 #### Transpiled Source
 
-TODO refine this section
+@Michi
+TODO refine this section 
 
 ```ts
 // main.ts
@@ -146,8 +147,8 @@ It does this by traversing the imports and merging chunks based on the paths fro
 
 ## Bundling using import attributes 
 
-TODO description
-TODO example of using all together (optional)
+TODO description @Michi
+TODO example of using all together (optional) @Michi
 
 ### chunkName attribute
 
@@ -155,7 +156,7 @@ Dynamic Imports marked with the chunkName attribute will generate a new named ch
 
 #### chunkName usage
 
-TODO add standalone example
+TODO add standalone example @Michi
 
 ##### chunkName and include attribute
 
@@ -293,6 +294,7 @@ export type ChunkNameAttribureOptions = ChunkNameAttribute | ChunkNameAttributeW
 ```
 
 ## Risk Management
+
 
 ### Rolldown considerations
 
