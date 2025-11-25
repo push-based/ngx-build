@@ -22,6 +22,9 @@ with rolldown to reduce the number of bundle. This can already significantly imp
 application especially for the initial bundles. However, this solution is limited and does not allow itself to be 
 extended with additional configuration to optimize.
 
+This is a TL;DR of the problem, if you would like to get a deeper understanding of this issue consult the 
+[docs](./problem-statements.md)
+
 ### Solution
 
 A set of tools that allows users to optimize the bundle output of angular application beyond the angular experimental 
