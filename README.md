@@ -2,9 +2,103 @@
 
 Tools to optimize build outputs from Angular when using Esbuild.
 
-https://repl.rolldown.rs/#eNqNUsFugzAM/RUrF1qpgjsVu2y7Taq0TdqllwhMly01KDEdFeLf57SEtds0DRDBid97xn6DqlU+KCR2x/TNh29S+Ve8UqWEZt82jmHoR6hds4ckzSrNWhKSLZUN+cZiapvdol9uaUvn9EXIOpLemzIkLtdChipn1+G4Uq6xtmo+KBV4bXYpz9q/nFxVwccWYYDHKW3TspEKIJYW4ck6lIL9CVNhrTvLsBhAtwbGZf4DX9zAEBAADrlzFCKQy1DbcQ5JbEmyOu+3Dj26A96H/SezIy0o9DnU2nqckkQendkLVts8MgJ4dqbk+x7LLohvXIUuh9CZCTdOa9PxSX1GZpmuDppKrG5fO3oXufkoHBoqbVfhHbZIFVJp0D+KiPPmgPZ4JRHSo8wYFnnJs6Usg2fTCrN0KjVC00f+oihAf2jDECc8N1vmLrjzFXCXP/4HLrvMCyRKrDFZK/ohhmcTTAMNpmPooYDkZfMgdxj3tRPXJ67ZgDPd184/zP2dVI1CehCU1Yye1fgJOTMWYg==
+## Motivation
 
-https://esbuild.github.io/try/#YgAwLjI1LjExAHsKICBidW5kbGU6IHRydWUsCiAgZm9ybWF0OiAnZXNtJywKICBzcGxpdHRpbmc6IHRydWUsCiAgb3V0ZGlyOiAnLycsCn0AZQBlbnRyeS5qcwBpbXBvcnQge3h9IGZyb20gJy4vZGF0YS5qcycKY29uc29sZS5sb2coeCkKCmltcG9ydCgnLi9keW5hbWljLmpzJykAAGR5bmFtaWMuanMAaW1wb3J0IHt4fSBmcm9tICcuL2RhdGEuanMnCgpjb25zb2xlLmxvZyh4KQAAZGF0YS5qcwBleHBvcnQgY29uc3QgeCA9ICdXT0xPTE8nOw
+### Problem Statement
+
+The Angular CLI is in the migrating from [Webpack](https://webpack.js.org/) to [Esbuild](https://esbuild.github.io/), 
+this has brought some massive build time performance improvements but also 
+[runtime performance degradations on large project](https://github.com/angular/angular-cli/issues/27321). 
+The root cause of this is the 
+[esbuild code splitting algorithm](https://github.com/evanw/esbuild/blob/main/docs/architecture.md#code-splitting), 
+which focus on minimizing the amount of code required by any entry point of the application. The problem is that the
+algorithm does not take into account additional consideration such as entry point hierarchy or application specific
+aspects like configurations which impact loading. Additionally, there is no API to configure code splitting behaviour in
+esbuild.
+
+To address some of these issues the angular team has added the 
+[experimental chunk optimizer](https://github.com/angular/angular-cli/pull/27953), which rebundles the application 
+with rolldown to reduce the number of bundle. This can already significantly impact the amount of chunks in you 
+application especially for the initial bundles. However, this solution is limited and does not allow itself to be 
+extended with additional configuration to optimize.
+
+### Solution
+
+A set of tools that allows users to optimize the bundle output of angular application beyond the angular experimental 
+chunk optimizer. By default, it provides additional optimization which most apps can benefit from, however, it is also
+configurable allowing for more complex optimizations which cannot be generalized to all applications.
+
+### Impact
+
+It is hard to quantify the general impact of reducing the number of chunks inside an application. 
+@TODO add precedents and external information. 
+
+Additionally, we created a demo that allows us to get more precise data on the impact of reducing chunks using the
+defaults
+
+@TODO Explain outcome
+https://github.com/angular/angular-cli/issues/27715#issuecomment-3398232305
+
+## Usage
+
+@Michael TODO review setup instruction
+
+As of now the bundle optimizer is only available for NX, however, we plan to make it more accessible for users that 
+with setups.
+
+TODO specify configuration and configuration defaults
+
+### Usage with NX
+
+To use the bundle optimizer you can install the npm package inside the repository
+
+```
+npm install @rx-angular/ngx-chunks
+```
+
+It is exposed as an Esbuild Plugin allowing you to simply add it to your build target in NX:
+
+```json
+{
+  "build": {
+    "executor": "@nx/angular:application",
+    "options": {
+      "plugins": ["@ngx-build/esbuild-plugin"]
+    }
+  }
+}
+```
+
+Additionally, you can specify additional configuration options inside the plugin options
+
+```json
+{
+  "build": {
+    "executor": "@nx/angular:application",
+    "options": {
+      "plugins": [
+        {
+          "path": "@ngx-build/esbuild-plugin",
+          "options": {} // TODO specify config options
+        }
+      ]
+    }
+  }
+}
+```
+
+## Architecture 
+
+@TODO 
+Mini explanation and link to md with details
+
+## Contributing
+
+@TODO
+
+--- 
+@TODO most likely everything down from here can be removed.
+---
 
 ### Reachability strategy
 
