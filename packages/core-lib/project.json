@@ -22,6 +22,14 @@
         "assets": ["packages/core-lib/*.md"]
       }
     },
+    "test": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/coverage/packages/core-lib"],
+      "options": {
+        "cwd": "packages/core-lib",
+        "command": "vitest --passWithNoTests"
+      }
+    },
     "nx-release-publish": {
       "options": {
         "packageRoot": "dist/{projectRoot}"

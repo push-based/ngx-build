@@ -13,9 +13,6 @@ export async function rolldownReBundle(
   const bundle = await rolldown({
     input: [entry],
     plugins: [esbuildOutputsLoaderPlugin(outputFiles, initialOptions)],
-    experimental: {
-      strictExecutionOrder: true,
-    },
   });
 
   const bundleOutput = await bundle.generate({

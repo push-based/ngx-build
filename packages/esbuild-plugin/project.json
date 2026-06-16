@@ -14,7 +14,8 @@
         "tsConfig": "packages/esbuild-plugin/tsconfig.lib.json",
         "assets": ["packages/esbuild-plugin/*.md"],
         "format": ["cjs", "esm"],
-        "declarationRootDir": "packages/esbuild-plugin/src",
+        "declarationRootDir": "packages",
+        "external": ["@ngx-build/core-lib"],
         "esbuildOptions": {
           "outExtension": {
             ".js": ".mjs"

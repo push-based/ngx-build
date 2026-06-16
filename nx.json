@@ -17,9 +17,11 @@
       "cache": true,
       "inputs": [
         "default",
+        "^default",
         "{workspaceRoot}/.eslintrc.json",
         "{workspaceRoot}/.eslintignore",
-        "{workspaceRoot}/eslint.config.js"
+        "{workspaceRoot}/eslint.config.js",
+        "{workspaceRoot}/tools/eslint-rules/**/*"
       ]
     },
     "@nx/jest:jest": {
@@ -45,12 +47,12 @@
       "dependsOn": ["^build"],
       "inputs": ["default", "^default"]
     },
-    "@nx/vite:test": {
-      "cache": true,
-      "inputs": ["default", "^default"]
-    },
     "e2e-ci--**/*": {
       "dependsOn": ["^build"]
+    },
+    "@nx/vitest:test": {
+      "cache": true,
+      "inputs": ["default", "^default"]
     }
   },
   "release": {
@@ -83,9 +85,14 @@
         "buildTargetName": "build",
         "serveTargetName": "serve",
         "previewTargetName": "preview",
-        "testTargetName": "test",
         "serveStaticTargetName": "serve-static",
         "typecheckTargetName": "typecheck"
+      }
+    },
+    {
+      "plugin": "@nx/vitest",
+      "options": {
+        "testTargetName": "test"
       }
     }
   ],
