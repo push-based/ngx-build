@@ -90,8 +90,8 @@
     "vitest": "4.1.9"
   },
   "workspaces": [
-    "packages/*",
-    "packages/kitchen-sink/application-builder"
+    "libs/*",
+    "apps/kitchen-sink/application-builder"
   ],
   "nx": {
     "includedScripts": []

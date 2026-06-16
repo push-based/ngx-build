@@ -16,8 +16,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@ngx-build/core-lib": ["packages/core-lib/src/index.ts"],
-      "@ngx-build/esbuild-plugin": ["packages/esbuild-plugin/src/index.ts"]
+      "@ngx-build/core-lib": ["libs/core-lib/src/index.ts"],
+      "@ngx-build/esbuild-plugin": ["libs/esbuild-plugin/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
