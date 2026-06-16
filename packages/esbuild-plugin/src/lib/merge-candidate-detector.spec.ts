@@ -87,11 +87,11 @@ describe('MergeCandidateDetector', () => {
       
       // Find candidates with shared dependencies
       const sharedDepsCandidate = candidates.find(c => 
-        c.chunks.includes('chunk1.js') && c.chunks.includes('chunk2.js')
+        c.chunks.length === 2 && c.chunks.includes('chunk1.js') && c.chunks.includes('chunk2.js')
       );
       
       const noSharedDepsCandidate = candidates.find(c => 
-        c.chunks.includes('chunk2.js') && c.chunks.includes('chunk3.js')
+        c.chunks.length === 2 && c.chunks.includes('chunk2.js') && c.chunks.includes('chunk3.js')
       );
       
       if (sharedDepsCandidate && noSharedDepsCandidate) {
@@ -288,4 +288,3 @@ describe('MergeCandidateDetector', () => {
     });
   });
 });
-

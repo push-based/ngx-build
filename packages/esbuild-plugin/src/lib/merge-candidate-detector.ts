@@ -406,9 +406,10 @@ export function calculateMergePriority(candidate: Omit<MergeCandidate, 'priority
   // Base score for any merge (ensuring we get positive scores)
   score += 10;
   
-  // Size efficiency (0-40 points) - favor ANY merging for smaller chunks
-  if (candidate.combinedSize < 250000) { // Under 250KB gets full points
-    score += 40;
+  // Size efficiency (0-40 points) - smaller chunk groups score higher.
+  const maxEfficientSize = 250000;
+  if (candidate.combinedSize < maxEfficientSize) {
+    score += Math.max(0, (maxEfficientSize - candidate.combinedSize) / maxEfficientSize) * 40;
   } else {
     score += 20; // Still give some points for larger merges
   }

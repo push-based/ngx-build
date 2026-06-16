@@ -16,11 +16,11 @@ export default defineConfig({
   test: {
     watch: false,
     globals: true,
-    cache: { dir: '../../node_modules/.vitest/packages/esbuild-plugin' },
     environment: 'node',
     include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     reporters: ['default'],
     coverage: {
+      include: ['src/**/*.{ts,mts,tsx}'],
       reportsDirectory: '../../coverage/packages/esbuild-plugin',
       provider: 'v8',
     },
