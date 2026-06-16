@@ -79,7 +79,7 @@
     "jsonc-eslint-parser": "^2.1.0",
     "nx": "22.7.5",
     "prettier": "^2.6.2",
-    "rolldown": "^1.0.0-beta.34",
+    "rolldown": "^1.1.1",
     "ts-jest": "29.4.2",
     "ts-node": "10.9.1",
     "type-fest": "^4.21.0",
