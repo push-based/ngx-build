@@ -1,10 +1,10 @@
 /* eslint-disable */
 module.exports = {
-  displayName: 'kitchen-sink-application-builder',
-  preset: '../../../jest.preset.js',
+  displayName: 'demo',
+  preset: '../../jest.preset.js',
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
   coverageDirectory:
-    '../../../coverage/apps/kitchen-sink/application-builder',
+    '../../coverage/apps/demo',
   transform: {
     '^.+\\.(ts|mjs|js|html)$': [
       'jest-preset-angular',

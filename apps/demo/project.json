@@ -1,9 +1,9 @@
 {
-  "name": "kitchen-sink-application-builder",
-  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "name": "demo",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
   "prefix": "app",
-  "sourceRoot": "apps/kitchen-sink/application-builder/src",
+  "sourceRoot": "apps/demo/src",
   "tags": [],
   "targets": {
     "build": {
@@ -12,21 +12,21 @@
       "options": {
         "statsJson": true,
         "outputPath": {
-          "base": "dist/apps/kitchen-sink/application-builder"
+          "base": "dist/apps/demo"
         },
-        "index": "apps/kitchen-sink/application-builder/src/index.html",
-        "browser": "apps/kitchen-sink/application-builder/src/main.ts",
+        "index": "apps/demo/src/index.html",
+        "browser": "apps/demo/src/main.ts",
         "polyfills": ["zone.js"],
-        "tsConfig": "apps/kitchen-sink/application-builder/tsconfig.app.json",
+        "tsConfig": "apps/demo/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "namedChunks": true,
         "assets": [
           {
             "glob": "**/*",
-            "input": "apps/kitchen-sink/application-builder/public"
+            "input": "apps/demo/public"
           }
         ],
-        "styles": ["apps/kitchen-sink/application-builder/src/styles.scss"],
+        "styles": ["apps/demo/src/styles.scss"],
       },
       "configurations": {
         "production": {
@@ -56,10 +56,10 @@
       "executor": "@nx/angular:dev-server",
       "configurations": {
         "production": {
-          "buildTarget": "kitchen-sink-application-builder:build:production"
+          "buildTarget": "demo:build:production"
         },
         "development": {
-          "buildTarget": "kitchen-sink-application-builder:build:development"
+          "buildTarget": "demo:build:development"
         }
       },
       "defaultConfiguration": "development",
@@ -68,7 +68,20 @@
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
       "options": {
-        "buildTarget": "kitchen-sink-application-builder:build"
+        "buildTarget": "demo:build"
+      }
+    },
+    "e2e": {
+      "executor": "@nx/cypress:cypress",
+      "options": {
+        "cypressConfig": "apps/demo/cypress.config.ts",
+        "testingType": "e2e",
+        "devServerTarget": "demo:serve"
+      },
+      "configurations": {
+        "production": {
+          "devServerTarget": "demo:serve:production"
+        }
       }
     },
     "test": {
@@ -82,7 +95,7 @@
       ],
       "outputs": [
         "{workspaceRoot}/coverage/{projectRoot}",
-        "{workspaceRoot}\\coverage\\apps\\kitchen-sink"
+        "{workspaceRoot}\\coverage\\apps\\demo"
       ],
       "options": {
         "passWithNoTests": true
@@ -98,9 +111,9 @@
       "executor": "@nx/web:file-server",
       "dependsOn": ["build"],
       "options": {
-        "buildTarget": "kitchen-sink-application-builder:build:production",
+        "buildTarget": "demo:build:production",
         "spa": true,
-        "staticFilePath": "dist/apps/kitchen-sink/application-builder/browser/"
+        "staticFilePath": "dist/apps/demo/browser/"
       }
     }
   }

@@ -122,5 +122,5 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
   ],
 })
 export class AppComponent {
-  title = 'kitchen-sink';
+  title = 'demo';
 }
