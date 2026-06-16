@@ -1,0 +1,37 @@
+{
+  "name": "esbuild-plugin",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/esbuild-plugin/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/esbuild-plugin",
+        "main": "libs/esbuild-plugin/src/index.ts",
+        "tsConfig": "libs/esbuild-plugin/tsconfig.lib.json",
+        "assets": ["libs/esbuild-plugin/*.md"],
+        "format": ["cjs", "esm"],
+        "declarationRootDir": "libs",
+        "external": ["@ngx-build/core-lib"],
+        "esbuildOptions": {
+          "outExtension": {
+            ".js": ".mjs"
+          }
+        },
+        "bundle": true
+      }
+    },
+    "test": {
+      "outputs": [
+        "{projectRoot}/{options.coverage.reportsDirectory}",
+        "{workspaceRoot}\\coverage\\libs\\esbuild-plugin"
+      ],
+      "options": {
+        "coverage.reportsDirectory": "../../coverage/libs/esbuild-plugin"
+      }
+    }
+  }
+}
