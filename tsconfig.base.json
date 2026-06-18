@@ -16,8 +16,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@ngx-build/core-lib": ["libs/core-lib/src/index.ts"],
-      "@ngx-build/esbuild-plugin": ["libs/esbuild-plugin/src/index.ts"]
+      "@push-based/ngx-chunks": ["libs/ngx-chunks/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

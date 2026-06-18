@@ -1,0 +1,34 @@
+{
+  "name": "ngx-chunks",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/ngx-chunks/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/ngx-chunks",
+        "main": "libs/ngx-chunks/src/index.ts",
+        "tsConfig": "libs/ngx-chunks/tsconfig.lib.json",
+        "assets": [
+          "libs/ngx-chunks/*.md",
+          "libs/ngx-chunks/package.json",
+          "libs/ngx-chunks/generators.json",
+          "libs/ngx-chunks/executors.json",
+          "libs/ngx-chunks/src/generators/**/*.json"
+        ]
+      }
+    },
+    "test": {
+      "outputs": [
+        "{projectRoot}/{options.coverage.reportsDirectory}",
+        "{workspaceRoot}\\coverage\\libs\\ngx-chunks"
+      ],
+      "options": {
+        "coverage.reportsDirectory": "../../coverage/libs/ngx-chunks"
+      }
+    }
+  }
+}

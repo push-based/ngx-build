@@ -1,0 +1,23 @@
+{
+  "name": "@push-based/ngx-chunks",
+  "version": "0.0.1",
+  "dependencies": {
+    "@nx/devkit": "22.7.5",
+    "esbuild": "^0.19.2",
+    "rolldown": "^1.0.0-beta.34",
+    "rollup": "^4.18.1",
+    "tslib": "^2.3.0"
+  },
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "require": "./src/index.js",
+      "import": "./src/index.js"
+    }
+  },
+  "author": "Christopher Holder",
+  "generators": "./generators.json",
+  "executors": "./executors.json"
+}

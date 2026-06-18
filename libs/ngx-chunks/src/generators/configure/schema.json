@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "Configure",
+  "title": "Configure ngx-chunks",
+  "type": "object",
+  "properties": {
+    "project": {
+      "type": "string",
+      "description": "Project to configure."
+    }
+  },
+  "required": ["project"]
+}
