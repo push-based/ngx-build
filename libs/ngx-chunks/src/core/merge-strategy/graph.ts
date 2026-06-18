@@ -1,28 +1,13 @@
 import type { Metafile } from 'esbuild';
 
-import type { OutputPath } from './types';
-
-export type OutputImport = Metafile['outputs'][OutputPath]['imports'][number];
-
-export type ImportKind = Extract<
-  OutputImport['kind'],
-  'import-statement' | 'dynamic-import'
->;
-
-export interface BundleGraphImport {
-  path: OutputPath;
-  kind: ImportKind;
-}
-
-export interface BundleGraphNode {
-  path: OutputPath;
-  imports: BundleGraphImport[];
-  entryPoint?: string;
-  isEntryPoint: boolean;
-  bytes: number;
-}
-
-export type BundleGraph = Map<OutputPath, BundleGraphNode>;
+import type {
+  BundleGraph,
+  BundleGraphImport,
+  BundleGraphNode,
+  ImportKind,
+  OutputImport,
+  OutputPath,
+} from './contracts';
 
 export function createBundleGraph(
   entryPointChunk: OutputPath,

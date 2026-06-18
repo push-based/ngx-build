@@ -1,10 +1,6 @@
 import type { Metafile } from 'esbuild';
 
-import type { BundleGraph } from './graph';
-
-export type OutputPath = keyof Metafile['outputs'] & string;
-
-export type MergeStrategy = Map<OutputPath, OutputPath[]>;
+import type { BundleGraph, MergeStrategy, OutputPath } from './contracts';
 
 export const STRATEGY_TYPE = {
   REACHABILITY: 'reachability',
@@ -57,3 +53,5 @@ export interface MergeStrategyFactory {
     config?: MergeStrategyConfig
   ): MergeStrategy;
 }
+
+export type { BundleGraph, MergeStrategy, OutputPath } from './contracts';

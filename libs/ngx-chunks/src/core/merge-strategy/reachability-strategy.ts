@@ -1,8 +1,5 @@
-import {
-  getReachableGraphOutputPaths,
-  type BundleGraph,
-  type BundleGraphImport,
-} from './graph';
+import type { BundleGraph, BundleGraphImport } from './contracts';
+import { getReachableGraphOutputPaths } from './graph';
 import { assignMergeGroup, getStaticClosure } from './static-closure-strategy';
 import type {
   MergeStrategy,
