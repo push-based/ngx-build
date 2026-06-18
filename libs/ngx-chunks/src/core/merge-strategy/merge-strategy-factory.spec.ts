@@ -105,7 +105,7 @@ describe('mergeStrategyFactory', () => {
         })
       )
     ).toEqual([
-      ['dist/common-b.js', ['dist/common-b.js', 'dist/common-a.js']],
+      ['dist/common-a.js', ['dist/common-a.js', 'dist/common-b.js']],
       ['dist/main.js', ['dist/main.js']],
       ['dist/admin.js', ['dist/admin.js']],
       ['dist/settings.js', ['dist/settings.js']],

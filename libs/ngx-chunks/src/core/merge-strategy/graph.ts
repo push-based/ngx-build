@@ -83,17 +83,17 @@ export function getTransitiveStaticDependencies(
   outputPath: OutputPath
 ): OutputPath[] {
   const visited = new Set<OutputPath>();
-  const stack = [...getStaticDependencies(graph, outputPath)];
+  const pending = [...getStaticDependencies(graph, outputPath)];
 
-  while (stack.length > 0) {
-    const current = stack.pop();
+  while (pending.length > 0) {
+    const current = pending.shift();
 
     if (!current || visited.has(current)) {
       continue;
     }
 
     visited.add(current);
-    stack.push(...getStaticDependencies(graph, current));
+    pending.push(...getStaticDependencies(graph, current));
   }
 
   return [...visited];
@@ -105,10 +105,10 @@ export function getReachableGraphOutputPaths(
   shouldSkipImport?: (imported: BundleGraphImport) => boolean
 ): OutputPath[] {
   const visited = new Set<OutputPath>();
-  const stack: OutputPath[] = [entryPointChunk];
+  const pending: OutputPath[] = [entryPointChunk];
 
-  while (stack.length > 0) {
-    const current = stack.pop();
+  while (pending.length > 0) {
+    const current = pending.shift();
 
     if (!current || visited.has(current)) {
       continue;
@@ -121,7 +121,7 @@ export function getReachableGraphOutputPaths(
         continue;
       }
 
-      stack.push(imported.path);
+      pending.push(imported.path);
     }
   }
 
@@ -133,10 +133,10 @@ function getReachableOutputPaths(
   metafile: Metafile
 ): OutputPath[] {
   const visited = new Set<OutputPath>();
-  const stack: OutputPath[] = [entryPointChunk];
+  const pending: OutputPath[] = [entryPointChunk];
 
-  while (stack.length > 0) {
-    const current = stack.pop();
+  while (pending.length > 0) {
+    const current = pending.shift();
 
     if (!current || visited.has(current)) {
       continue;
@@ -161,7 +161,7 @@ function getReachableOutputPaths(
         continue;
       }
 
-      stack.push(nextPath);
+      pending.push(nextPath);
     }
   }
 
