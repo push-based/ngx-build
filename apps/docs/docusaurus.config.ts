@@ -1,4 +1,4 @@
-import type {Config} from '@docusaurus/types';
+import type { Config } from '@docusaurus/types';
 import type {
   Options as PresetOptions,
   ThemeConfig,
@@ -71,8 +71,8 @@ const config: Config = {
           title: 'Docs',
           items: [
             {
-              label: 'Introduction',
-              to: '/docs/intro',
+              label: 'Setup',
+              to: '/docs/setup',
             },
           ],
         },

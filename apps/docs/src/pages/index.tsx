@@ -14,35 +14,41 @@ export default function Home() {
       <main className={styles.main}>
         <section className={styles.hero}>
           <div className={styles.heroContent}>
-            <p className={styles.eyebrow}>Nx integrated documentation</p>
+            <p className={styles.eyebrow}>Push-Based build tooling</p>
             <Heading as="h1" className={styles.title}>
               ngx-build
             </Heading>
             <p className={styles.subtitle}>
-              Build notes, package workflows, and bundling experiments in one
-              TypeScript Docusaurus site.
+              Documentation for Angular chunk optimization, setup paths, and
+              package workflows.
             </p>
             <div className={styles.actions}>
               <Link
-                className={clsx('button button--primary button--lg', styles.action)}
-                to="/docs/intro"
+                className={clsx(
+                  'button button--primary button--lg',
+                  styles.action
+                )}
+                to="/docs/setup"
               >
-                Open docs
+                Setup
               </Link>
               <Link
-                className={clsx('button button--secondary button--lg', styles.action)}
-                to="/docs/intro"
+                className={clsx(
+                  'button button--secondary button--lg',
+                  styles.action
+                )}
+                to="/docs/setup/nx"
               >
-                Nx targets
+                Nx setup
               </Link>
             </div>
           </div>
           <div className={styles.visual} aria-hidden="true">
             <div className={styles.panel}>
-              <span>apps/docs</span>
-              <strong>docs:build</strong>
-              <strong>docs:serve</strong>
-              <strong>docs:typecheck</strong>
+              <span>Setup paths</span>
+              <strong>Angular CLI setup</strong>
+              <strong>Nx Workspace setup</strong>
+              <strong>esbuild plugin configuration</strong>
             </div>
           </div>
         </section>

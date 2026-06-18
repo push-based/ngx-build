@@ -1,14 +1,15 @@
 .main {
+  background: #fcfcfd;
   min-height: calc(100vh - var(--ifm-navbar-height));
 }
 
 .hero {
   align-items: center;
   background:
-    linear-gradient(135deg, rgba(24, 36, 58, 0.9), rgba(34, 83, 93, 0.78)),
+    linear-gradient(90deg, rgba(252, 252, 253, 0.98), rgba(252, 252, 253, 0.88)),
     url('/img/docs-grid.svg');
   background-size: cover;
-  color: #fff;
+  color: #121926;
   display: grid;
   gap: 48px;
   grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
@@ -21,23 +22,22 @@
 }
 
 .eyebrow {
-  color: #8ee7d2;
+  color: #6938ef;
   font-size: 0.9rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0;
   margin: 0 0 16px;
-  text-transform: uppercase;
 }
 
 .title {
-  color: #fff;
-  font-size: clamp(3rem, 8vw, 6rem);
-  line-height: 0.95;
+  color: #121926;
+  font-size: clamp(3rem, 7vw, 5.5rem);
+  line-height: 1;
   margin-bottom: 24px;
 }
 
 .subtitle {
-  color: rgba(255, 255, 255, 0.86);
+  color: #697586;
   font-size: 1.25rem;
   line-height: 1.55;
   margin: 0;
@@ -61,10 +61,10 @@
 }
 
 .panel {
-  background: rgba(10, 18, 32, 0.72);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(252, 252, 253, 0.86);
+  border: 1px solid #cdd5df;
   border-radius: 8px;
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.24);
+  box-shadow: 0 24px 80px rgba(18, 25, 38, 0.08);
   display: grid;
   gap: 16px;
   max-width: 360px;
@@ -73,18 +73,50 @@
 }
 
 .panel span {
-  color: #8ee7d2;
+  color: #697586;
   font-family: var(--ifm-font-family-monospace);
   font-size: 0.9rem;
 }
 
 .panel strong {
-  background: rgba(255, 255, 255, 0.1);
+  background: #f8fafc;
+  border: 1px solid #eef2f6;
   border-radius: 6px;
-  color: #fff;
+  color: #121926;
   display: block;
   font-family: var(--ifm-font-family-monospace);
   padding: 14px 16px;
+}
+
+[data-theme='dark'] .main {
+  background: #0d131c;
+}
+
+[data-theme='dark'] .hero {
+  background:
+    linear-gradient(90deg, rgba(13, 19, 28, 0.98), rgba(13, 19, 28, 0.9)),
+    url('/img/docs-grid.svg');
+  color: #fcfcfd;
+}
+
+[data-theme='dark'] .title {
+  color: #fcfcfd;
+}
+
+[data-theme='dark'] .subtitle {
+  color: #8b96a5;
+}
+
+[data-theme='dark'] .panel {
+  background: rgba(18, 25, 38, 0.9);
+  border-color: #364152;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.24);
+}
+
+[data-theme='dark'] .panel strong {
+  background: #202939;
+  border-color: #364152;
+  color: #fcfcfd;
 }
 
 @media (max-width: 840px) {
