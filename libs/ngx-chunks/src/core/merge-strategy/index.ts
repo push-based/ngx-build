@@ -15,6 +15,11 @@ export {
 } from './graph';
 export { mergeStrategyFactory } from './merge-strategy-factory';
 export {
+  applyStaticClosureStrategy,
+  assignMergeGroup,
+  getStaticClosure,
+} from './static-closure-strategy';
+export {
   STRATEGY_TYPE,
   type CommonStrategyDefinition,
   type MergeStrategy,
