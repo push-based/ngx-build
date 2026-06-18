@@ -1,4 +1,5 @@
 export { DEFAULT_MERGE_STRATEGY_CONFIG } from './config';
+export { applyCommonStrategy } from './common-strategy';
 export {
   createBundleGraph,
   findOutputForEntryPoint,
