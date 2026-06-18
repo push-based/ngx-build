@@ -54,6 +54,6 @@ export interface MergeStrategyFactory {
   (
     entryPointChunk: OutputPath,
     metafile: Metafile,
-    config: MergeStrategyConfig
+    config?: MergeStrategyConfig
   ): MergeStrategy;
 }

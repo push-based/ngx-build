@@ -24,6 +24,7 @@ export {
   assignMergeGroup,
   getStaticClosure,
 } from './static-closure-strategy';
+export { applyStrategies } from './strategy-applicator';
 export {
   STRATEGY_TYPE,
   type CommonStrategyDefinition,
