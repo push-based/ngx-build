@@ -63,6 +63,71 @@ describe('mergeStrategyFactory', () => {
       ['dist/shared.js', ['dist/shared.js']],
     ]);
   });
+
+  it('applies a common strategy for selected entry point static closures', () => {
+    const metafile = createMetafile({
+      'dist/main.js': output({
+        entryPoint: 'src/main.ts',
+        imports: [
+          dynamicImport('dist/admin.js'),
+          dynamicImport('dist/settings.js'),
+        ],
+      }),
+      'dist/admin.js': output({
+        entryPoint: 'src/admin.ts',
+        imports: [
+          importStatement('dist/common-a.js'),
+          importStatement('dist/common-b.js'),
+        ],
+      }),
+      'dist/settings.js': output({
+        entryPoint: 'src/settings.ts',
+        imports: [
+          importStatement('dist/common-a.js'),
+          importStatement('dist/common-b.js'),
+        ],
+      }),
+      'dist/common-a.js': output(),
+      'dist/common-b.js': output(),
+    });
+
+    expect(
+      toEntries(
+        mergeStrategyFactory('dist/main.js', metafile, {
+          name: 'common',
+          strategies: [
+            {
+              label: 'admin settings common',
+              type: STRATEGY_TYPE.COMMON,
+              entryPoints: ['src/admin.ts', 'src/settings.ts'],
+            },
+          ],
+        })
+      )
+    ).toEqual([
+      ['dist/common-b.js', ['dist/common-b.js', 'dist/common-a.js']],
+      ['dist/main.js', ['dist/main.js']],
+      ['dist/admin.js', ['dist/admin.js']],
+      ['dist/settings.js', ['dist/settings.js']],
+    ]);
+  });
+
+  it('rejects a graph where the same output is imported statically and dynamically', () => {
+    const metafile = createMetafile({
+      'dist/main.js': output({
+        entryPoint: 'src/main.ts',
+        imports: [
+          importStatement('dist/shared.js'),
+          dynamicImport('dist/shared.js'),
+        ],
+      }),
+      'dist/shared.js': output(),
+    });
+
+    expect(() => mergeStrategyFactory('dist/main.js', metafile)).toThrow(
+      'imports "dist/shared.js" as both "import-statement" and "dynamic-import"'
+    );
+  });
 });
 
 function createMetafile(outputs: Metafile['outputs']): Metafile {
