@@ -18,16 +18,14 @@ export {
   getTransitiveStaticDependencies,
   isJavaScriptOutput,
 } from './graph';
+export { getStaticClosure } from './graph-queries';
 export { mergeStrategyFactory } from './merge-strategy-factory';
+export { assignMergeGroup } from './merge-groups';
 export {
   applyReachabilityStrategy,
   createReachabilityMergeGroups,
 } from './reachability-strategy';
-export {
-  applyStaticClosureStrategy,
-  assignMergeGroup,
-  getStaticClosure,
-} from './static-closure-strategy';
+export { applyStaticClosureStrategy } from './static-closure-strategy';
 export { applyStrategies } from './strategy-applicator';
 export {
   STRATEGY_TYPE,

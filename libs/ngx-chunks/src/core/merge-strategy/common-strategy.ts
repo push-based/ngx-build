@@ -1,5 +1,6 @@
 import { findOutputForEntryPoint } from './graph';
-import { assignMergeGroup, getStaticClosure } from './static-closure-strategy';
+import { getStaticClosure } from './graph-queries';
+import { assignMergeGroup } from './merge-groups';
 import type {
   CommonStrategyDefinition,
   MergeStrategyContext,
