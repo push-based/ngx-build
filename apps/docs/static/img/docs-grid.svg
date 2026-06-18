@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" preserveAspectRatio="xMidYMid slice">
+  <rect width="1200" height="720" fill="#14263a"/>
+  <g fill="none" stroke="#ffffff" stroke-opacity=".12">
+    <path d="M0 120h1200M0 240h1200M0 360h1200M0 480h1200M0 600h1200"/>
+    <path d="M120 0v720M240 0v720M360 0v720M480 0v720M600 0v720M720 0v720M840 0v720M960 0v720M1080 0v720"/>
+  </g>
+  <g fill="#45d6c2" fill-opacity=".28">
+    <rect x="190" y="156" width="280" height="74" rx="8"/>
+    <rect x="548" y="294" width="460" height="74" rx="8"/>
+    <rect x="315" y="442" width="340" height="74" rx="8"/>
+  </g>
+</svg>

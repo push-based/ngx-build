@@ -52,3 +52,7 @@ vitest.config.*.timestamp*
 .claude/worktrees
 .nx/polygraph
 .nx/self-healing
+
+# Docusaurus
+apps/docs/.docusaurus
+apps/docs/build
