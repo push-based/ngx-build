@@ -1,15 +1,15 @@
 import { findOutputForEntryPoint } from './graph';
 import { getStaticClosure } from './graph-queries';
-import { assignMergeGroup } from './merge-groups';
 import type {
+  MergeStrategy,
   MergeStrategyContext,
   StaticClosureStrategyDefinition,
 } from './types';
 
-export function applyStaticClosureStrategy(
+export function createStaticClosureMergeGroups(
   strategy: StaticClosureStrategyDefinition,
-  context: MergeStrategyContext
-): void {
+  context: Pick<MergeStrategyContext, 'graph' | 'metafile'>
+): MergeStrategy {
   const entryPointChunk = findOutputForEntryPoint(
     strategy.entryPoint,
     context.metafile
@@ -21,9 +21,10 @@ export function applyStaticClosureStrategy(
     );
   }
 
-  assignMergeGroup(
-    entryPointChunk,
-    [entryPointChunk, ...getStaticClosure(context, entryPointChunk)],
-    context
-  );
+  return new Map([
+    [
+      entryPointChunk,
+      [entryPointChunk, ...getStaticClosure(context, entryPointChunk)],
+    ],
+  ]);
 }

@@ -1,5 +1,5 @@
 export { DEFAULT_MERGE_STRATEGY_CONFIG } from './config';
-export { applyCommonStrategy } from './common-strategy';
+export { createCommonMergeGroups } from './common-strategy';
 export {
   type BundleGraph,
   type BundleGraphImport,
@@ -21,11 +21,8 @@ export {
 export { getStaticClosure } from './graph-queries';
 export { mergeStrategyFactory } from './merge-strategy-factory';
 export { assignMergeGroup } from './merge-groups';
-export {
-  applyReachabilityStrategy,
-  createReachabilityMergeGroups,
-} from './reachability-strategy';
-export { applyStaticClosureStrategy } from './static-closure-strategy';
+export { createReachabilityMergeGroups } from './reachability-strategy';
+export { createStaticClosureMergeGroups } from './static-closure-strategy';
 export { applyStrategies } from './strategy-applicator';
 export {
   STRATEGY_TYPE,

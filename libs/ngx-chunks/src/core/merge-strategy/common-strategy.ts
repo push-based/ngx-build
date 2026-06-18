@@ -1,16 +1,16 @@
 import { findOutputForEntryPoint } from './graph';
 import { getStaticClosure } from './graph-queries';
-import { assignMergeGroup } from './merge-groups';
 import type {
   CommonStrategyDefinition,
+  MergeStrategy,
   MergeStrategyContext,
   OutputPath,
 } from './types';
 
-export function applyCommonStrategy(
+export function createCommonMergeGroups(
   strategy: CommonStrategyDefinition,
-  context: MergeStrategyContext
-): void {
+  context: Pick<MergeStrategyContext, 'assigned' | 'graph' | 'metafile'>
+): MergeStrategy {
   const entryPointChunks = strategy.entryPoints.map((entryPoint) =>
     resolveEntryPointChunk(strategy, entryPoint, context)
   );
@@ -19,16 +19,16 @@ export function applyCommonStrategy(
   const owner = commonChunks[0];
 
   if (!owner) {
-    return;
+    return new Map();
   }
 
-  assignMergeGroup(owner, commonChunks, context);
+  return new Map([[owner, commonChunks]]);
 }
 
 function resolveEntryPointChunk(
   strategy: CommonStrategyDefinition,
   entryPoint: string,
-  context: MergeStrategyContext
+  context: Pick<MergeStrategyContext, 'assigned' | 'metafile'>
 ): OutputPath {
   const entryPointChunk = findOutputForEntryPoint(entryPoint, context.metafile);
 
@@ -49,7 +49,7 @@ function resolveEntryPointChunk(
 
 function getCommonChunks(
   entryPointChunks: OutputPath[],
-  context: MergeStrategyContext
+  context: Pick<MergeStrategyContext, 'assigned' | 'graph'>
 ): OutputPath[] {
   const commonChunks = new Set<OutputPath>();
 

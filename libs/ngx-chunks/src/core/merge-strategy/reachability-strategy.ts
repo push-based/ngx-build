@@ -1,33 +1,7 @@
 import type { BundleGraph, BundleGraphImport } from './contracts';
 import { getReachableGraphOutputPaths } from './graph';
 import { getStaticClosure } from './graph-queries';
-import { assignMergeGroup } from './merge-groups';
-import type {
-  MergeStrategy,
-  MergeStrategyContext,
-  OutputPath,
-  ReachabilityStrategyDefinition,
-} from './types';
-
-export function applyReachabilityStrategy(
-  strategy: ReachabilityStrategyDefinition,
-  context: MergeStrategyContext
-): void {
-  const mergeGroups = createReachabilityMergeGroups(
-    context.entryPointChunk,
-    context.graph
-  );
-
-  for (const [owner, chunks] of mergeGroups) {
-    if (context.assigned.has(owner)) {
-      throw new Error(
-        `Entry point chunk "${owner}" specified in "${strategy.label}" has already been assigned.`
-      );
-    }
-
-    assignMergeGroup(owner, chunks, context);
-  }
-}
+import type { MergeStrategy, OutputPath } from './types';
 
 export function createReachabilityMergeGroups(
   entryPointChunk: OutputPath,

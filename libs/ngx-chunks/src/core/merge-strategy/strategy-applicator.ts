@@ -1,8 +1,10 @@
-import { applyCommonStrategy } from './common-strategy';
-import { applyReachabilityStrategy } from './reachability-strategy';
-import { applyStaticClosureStrategy } from './static-closure-strategy';
+import { createCommonMergeGroups } from './common-strategy';
+import { assignMergeGroup } from './merge-groups';
+import { createReachabilityMergeGroups } from './reachability-strategy';
+import { createStaticClosureMergeGroups } from './static-closure-strategy';
 import {
   STRATEGY_TYPE,
+  type MergeStrategy,
   type MergeStrategyConfig,
   type MergeStrategyContext,
   type StrategyDefinition,
@@ -23,19 +25,47 @@ function applyStrategy(
 ): void {
   switch (strategy.type) {
     case STRATEGY_TYPE.REACHABILITY:
-      applyReachabilityStrategy(strategy, context);
+      applyMergeGroups(
+        createReachabilityMergeGroups(context.entryPointChunk, context.graph),
+        strategy.label,
+        context
+      );
       return;
 
     case STRATEGY_TYPE.STATIC_CLOSURE:
-      applyStaticClosureStrategy(strategy, context);
+      applyMergeGroups(
+        createStaticClosureMergeGroups(strategy, context),
+        strategy.label,
+        context
+      );
       return;
 
     case STRATEGY_TYPE.COMMON:
-      applyCommonStrategy(strategy, context);
+      applyMergeGroups(
+        createCommonMergeGroups(strategy, context),
+        strategy.label,
+        context
+      );
       return;
 
     default:
       assertUnreachable(strategy);
+  }
+}
+
+function applyMergeGroups(
+  mergeGroups: MergeStrategy,
+  strategyLabel: string,
+  context: MergeStrategyContext
+): void {
+  for (const [owner, chunks] of mergeGroups) {
+    if (context.assigned.has(owner)) {
+      throw new Error(
+        `Merge group owner "${owner}" specified in "${strategyLabel}" has already been assigned.`
+      );
+    }
+
+    assignMergeGroup(owner, chunks, context);
   }
 }
 
