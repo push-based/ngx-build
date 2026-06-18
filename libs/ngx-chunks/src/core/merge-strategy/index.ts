@@ -16,6 +16,10 @@ export {
 } from './graph';
 export { mergeStrategyFactory } from './merge-strategy-factory';
 export {
+  applyReachabilityStrategy,
+  createReachabilityMergeGroups,
+} from './reachability-strategy';
+export {
   applyStaticClosureStrategy,
   assignMergeGroup,
   getStaticClosure,
