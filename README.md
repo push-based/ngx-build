@@ -56,7 +56,7 @@ TODO specify configuration and configuration defaults
 To use the bundle optimizer you can install the npm package inside the repository
 
 ```
-npm install @rx-angular/ngx-chunks
+yarn add @rx-angular/ngx-chunks
 ```
 
 It is exposed as an Esbuild Plugin allowing you to simply add it to your build target in NX:

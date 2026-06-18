@@ -10,7 +10,6 @@
       "executor": "@nx/angular:application",
       "outputs": ["{options.outputPath.base}"],
       "options": {
-        "statsJson": true,
         "outputPath": {
           "base": "dist/apps/demo"
         },
@@ -26,10 +25,11 @@
             "input": "apps/demo/public"
           }
         ],
-        "styles": ["apps/demo/src/styles.scss"],
+        "styles": ["apps/demo/src/styles.scss"]
       },
       "configurations": {
         "production": {
+          "statsJson": true,
           "budgets": [
             {
               "type": "initial",

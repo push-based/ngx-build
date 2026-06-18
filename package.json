@@ -2,6 +2,7 @@
   "name": "ngx-build",
   "version": "0.0.0",
   "license": "MIT",
+  "packageManager": "yarn@1.22.22",
   "scripts": {},
   "private": true,
   "dependencies": {

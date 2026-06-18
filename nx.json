@@ -48,7 +48,7 @@
   },
   "release": {
     "version": {
-      "preVersionCommand": "npx nx run-many -t build"
+      "preVersionCommand": "yarn nx run-many -t build"
     }
   },
   "plugins": [
