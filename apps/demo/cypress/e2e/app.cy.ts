@@ -1,4 +1,6 @@
 describe('Ngx Build Demo', () => {
+  const expectedLoadedBundleCount = 5;
+
   it('loads optimized bundles without browser errors', () => {
     const jsRequests = new Set<string>();
 
@@ -37,7 +39,9 @@ describe('Ngx Build Demo', () => {
       .should('deep.equal', []);
 
     cy.wrap(null).then(() => {
-      expect([...jsRequests], 'loaded JS bundles').to.have.length.within(1, 8);
+      expect([...jsRequests], 'loaded JS bundles').to.have.length(
+        expectedLoadedBundleCount
+      );
     });
   });
 });

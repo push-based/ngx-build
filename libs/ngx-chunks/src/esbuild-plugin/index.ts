@@ -19,7 +19,14 @@ export default function optimizeChunksPlugin(
     name: 'ngx-chunks',
     setup({ onEnd, initialOptions }) {
       onEnd(async (result) => {
-        if (initialOptions.platform === 'node') {
+        if (
+          initialOptions.platform === 'node' ||
+          initialOptions.define?.['ngServerMode'] === 'true'
+        ) {
+          return;
+        }
+
+        if (initialOptions.define?.['ngDevMode'] !== 'false') {
           return;
         }
 
@@ -71,8 +78,7 @@ export default function optimizeChunksPlugin(
         );
 
         result.outputFiles.push(initialChunksFile);
-        result.metafile.outputs[initialChunksFile.path] =
-          initialChunksFileMeta;
+        result.metafile.outputs[initialChunksFile.path] = initialChunksFileMeta;
       });
     },
   };
