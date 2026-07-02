@@ -17,7 +17,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Calculate paths
-const PROJECT_ROOT = join(__dirname, '../../../packages/kitchen-sink/src');
+const PROJECT_ROOT = join(__dirname, '../../../apps/demo/src');
 const CHUNKERS_PATH = join(PROJECT_ROOT, CONFIG.CHUNKERS_DIR);
 
 /**

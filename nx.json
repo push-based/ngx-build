@@ -17,23 +17,12 @@
       "cache": true,
       "inputs": [
         "default",
+        "^default",
         "{workspaceRoot}/.eslintrc.json",
         "{workspaceRoot}/.eslintignore",
-        "{workspaceRoot}/eslint.config.js"
+        "{workspaceRoot}/eslint.config.js",
+        "{workspaceRoot}/tools/eslint-rules/**/*"
       ]
-    },
-    "@nx/jest:jest": {
-      "cache": true,
-      "inputs": ["default", "^default", "{workspaceRoot}/jest.preset.js"],
-      "options": {
-        "passWithNoTests": true
-      },
-      "configurations": {
-        "ci": {
-          "ci": true,
-          "codeCoverage": true
-        }
-      }
     },
     "@angular-devkit/build-angular:application": {
       "cache": true,
@@ -45,36 +34,28 @@
       "dependsOn": ["^build"],
       "inputs": ["default", "^default"]
     },
-    "@nx/vite:test": {
+    "e2e-ci--**/*": {
+      "dependsOn": ["^build"]
+    },
+    "@nx/angular:unit-test": {
       "cache": true,
       "inputs": ["default", "^default"]
     },
-    "e2e-ci--**/*": {
-      "dependsOn": ["^build"]
+    "@nx/vitest:test": {
+      "cache": true,
+      "inputs": ["default", "^default"]
     }
   },
   "release": {
     "version": {
-      "preVersionCommand": "npx nx run-many -t build"
+      "preVersionCommand": "yarn nx run-many -t build"
     }
   },
   "plugins": [
     {
-      "plugin": "@nx/playwright/plugin",
-      "options": {
-        "targetName": "e2e"
-      }
-    },
-    {
       "plugin": "@nx/eslint/plugin",
       "options": {
         "targetName": "lint"
-      }
-    },
-    {
-      "plugin": "@nx/jest/plugin",
-      "options": {
-        "targetName": "test"
       }
     },
     {
@@ -83,18 +64,23 @@
         "buildTargetName": "build",
         "serveTargetName": "serve",
         "previewTargetName": "preview",
-        "testTargetName": "test",
         "serveStaticTargetName": "serve-static",
         "typecheckTargetName": "typecheck"
+      }
+    },
+    {
+      "plugin": "@nx/vitest",
+      "options": {
+        "testTargetName": "test"
       }
     }
   ],
   "generators": {
     "@nx/angular:application": {
-      "e2eTestRunner": "playwright",
+      "e2eTestRunner": "cypress",
       "linter": "eslint",
       "style": "scss",
-      "unitTestRunner": "jest"
+      "unitTestRunner": "vitest"
     },
     "@nx/angular:component": {
       "type": "component"
@@ -151,5 +137,6 @@
       "typeSeparator": "."
     }
   },
-  "nxCloudId": "68c970fac698651653a18953"
+  "nxCloudId": "68c970fac698651653a18953",
+  "analytics": false
 }

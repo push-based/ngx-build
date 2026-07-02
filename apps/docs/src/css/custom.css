@@ -1,0 +1,218 @@
+@font-face {
+  font-display: swap;
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 100 900;
+  src: url('https://brand-push-based.netlify.app/fonts/GeistVF.woff2')
+    format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-weight: 100 900;
+  src: url('https://brand-push-based.netlify.app/fonts/GeistMonoVF.woff2')
+    format('woff2');
+}
+
+:root {
+  --ifm-background-color: #fcfcfd;
+  --ifm-background-surface-color: #fcfcfd;
+  --ifm-color-content: #121926;
+  --ifm-color-content-secondary: #697586;
+  --ifm-color-emphasis-100: #f8fafc;
+  --ifm-color-emphasis-200: #eef2f6;
+  --ifm-color-emphasis-300: #cdd5df;
+  --ifm-color-primary: #6938ef;
+  --ifm-color-primary-dark: #5924ed;
+  --ifm-color-primary-darker: #4f17eb;
+  --ifm-color-primary-darkest: #4011c3;
+  --ifm-color-primary-light: #7a5af8;
+  --ifm-color-primary-lighter: #8b70f7;
+  --ifm-color-primary-lightest: #a48bfd;
+  --ifm-font-family-base: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --ifm-font-family-monospace: 'Geist Mono', ui-monospace, monospace;
+  --ifm-heading-color: #121926;
+  --ifm-heading-font-weight: 700;
+  --ifm-navbar-background-color: rgba(252, 252, 253, 0.86);
+  --ifm-navbar-shadow: 0 1px 0 #cdd5df;
+  --ifm-toc-border-color: #cdd5df;
+  --ifm-code-font-size: 95%;
+  --ifm-code-background: #f8fafc;
+  --ifm-pre-background: #f8fafc;
+  --ifm-table-border-color: #cdd5df;
+  --ifm-global-radius: 8px;
+  --ifm-button-border-radius: 8px;
+}
+
+[data-theme='dark'] {
+  --ifm-background-color: #0d131c;
+  --ifm-background-surface-color: #121926;
+  --ifm-color-content: #fcfcfd;
+  --ifm-color-content-secondary: #8b96a5;
+  --ifm-color-emphasis-100: #202939;
+  --ifm-color-emphasis-200: #364152;
+  --ifm-color-emphasis-300: #4b5565;
+  --ifm-color-primary: #8b70f7;
+  --ifm-color-primary-dark: #7a5af8;
+  --ifm-color-primary-darker: #6938ef;
+  --ifm-color-primary-darkest: #5720df;
+  --ifm-color-primary-light: #a48bfd;
+  --ifm-color-primary-lighter: #b8a6fe;
+  --ifm-color-primary-lightest: #d8d0ff;
+  --ifm-heading-color: #fcfcfd;
+  --ifm-navbar-background-color: rgba(18, 25, 38, 0.9);
+  --ifm-navbar-shadow: 0 1px 0 #364152;
+  --ifm-toc-border-color: #364152;
+  --ifm-code-background: #202939;
+  --ifm-pre-background: #202939;
+  --ifm-table-border-color: #364152;
+}
+
+body {
+  font-feature-settings: 'rlig' 1, 'calt' 1;
+}
+
+.navbar {
+  backdrop-filter: blur(12px);
+}
+
+.navbar__brand {
+  font-weight: 700;
+}
+
+.navbar__logo {
+  align-items: center;
+  display: flex;
+  height: 2rem;
+  margin-right: 0.75rem;
+  overflow: hidden;
+  width: 1.45rem;
+}
+
+.navbar__logo img {
+  height: 2rem;
+  max-width: none;
+}
+
+.theme-doc-sidebar-container {
+  background: var(--ifm-color-emphasis-100);
+  border-right-color: var(--ifm-toc-border-color) !important;
+}
+
+.menu__link {
+  border-radius: 6px;
+  color: var(--ifm-color-content-secondary);
+  font-size: 0.9rem;
+}
+
+.menu__link--active,
+.menu__link:hover {
+  color: var(--ifm-color-content);
+}
+
+.theme-doc-markdown {
+  color: var(--ifm-color-content-secondary);
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.theme-doc-markdown h1 {
+  color: var(--ifm-heading-color);
+  font-size: 2.25rem;
+  line-height: 1.12;
+  margin-bottom: 0.5rem;
+}
+
+.theme-doc-markdown h2 {
+  color: var(--ifm-heading-color);
+  font-size: 1.5rem;
+  line-height: 1.35;
+  margin-bottom: 1rem;
+  margin-top: 3rem;
+}
+
+.theme-doc-markdown h3 {
+  color: var(--ifm-heading-color);
+  font-size: 1.25rem;
+  line-height: 1.4;
+}
+
+.theme-doc-markdown strong {
+  color: var(--ifm-color-content);
+  font-weight: 600;
+}
+
+.theme-doc-markdown a:not(.hash-link) {
+  color: var(--ifm-color-content);
+  font-weight: 500;
+  text-decoration-color: var(--ifm-color-emphasis-300);
+  text-underline-offset: 3px;
+}
+
+.theme-doc-markdown a:not(.hash-link):hover {
+  text-decoration-color: var(--ifm-color-content);
+}
+
+.theme-doc-markdown code {
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 6px;
+  color: var(--ifm-color-content);
+  font-family: var(--ifm-font-family-monospace);
+  font-weight: 500;
+  padding: 0.125rem 0.375rem;
+}
+
+.theme-code-block {
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 8px;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.theme-code-block [class*='codeBlockContent'] {
+  padding: 1rem 1.25rem;
+}
+
+.theme-doc-markdown pre {
+  background: var(--ifm-pre-background);
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 8px;
+  line-height: 1.7;
+  padding: 1rem 1.25rem;
+}
+
+.theme-doc-markdown pre code {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  font-weight: 400;
+  padding: 0;
+}
+
+.theme-code-block pre {
+  border: 0;
+  padding: 0;
+}
+
+.theme-code-block code {
+  border: 0;
+  padding: 0;
+}
+
+.button {
+  font-weight: 600;
+}
+
+.button--primary {
+  --ifm-button-background-color: var(--ifm-color-primary);
+  --ifm-button-border-color: var(--ifm-color-primary);
+  --ifm-button-color: #fcfaff;
+}
+
+.button--secondary {
+  --ifm-button-background-color: var(--ifm-color-emphasis-200);
+  --ifm-button-border-color: var(--ifm-color-emphasis-300);
+  --ifm-button-color: var(--ifm-color-content);
+}

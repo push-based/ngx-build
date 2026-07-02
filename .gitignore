@@ -48,3 +48,11 @@ vite.config.*.timestamp*
 vitest.config.*.timestamp*
 .cursor/rules/nx-rules.mdc
 .github/instructions/nx.instructions.md
+
+.claude/worktrees
+.nx/polygraph
+.nx/self-healing
+
+# Docusaurus
+apps/docs/.docusaurus
+apps/docs/build

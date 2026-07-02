@@ -1,0 +1,104 @@
+{
+  "name": "demo",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "prefix": "app",
+  "sourceRoot": "apps/demo/src",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/angular:application",
+      "outputs": ["{options.outputPath.base}"],
+      "options": {
+        "outputPath": {
+          "base": "dist/apps/demo"
+        },
+        "index": "apps/demo/src/index.html",
+        "browser": "apps/demo/src/main.ts",
+        "polyfills": ["zone.js"],
+        "tsConfig": "apps/demo/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "namedChunks": true,
+        "plugins": ["@push-based/ngx-chunks"],
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "apps/demo/public"
+          }
+        ],
+        "styles": ["apps/demo/src/styles.scss"]
+      },
+      "configurations": {
+        "production": {
+          "statsJson": true,
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "2kb",
+              "maximumError": "4kb"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "executor": "@nx/angular:dev-server",
+      "configurations": {
+        "production": {
+          "buildTarget": "demo:build:production"
+        },
+        "development": {
+          "buildTarget": "demo:build:development"
+        }
+      },
+      "defaultConfiguration": "development",
+      "continuous": true
+    },
+    "extract-i18n": {
+      "executor": "@angular-devkit/build-angular:extract-i18n",
+      "options": {
+        "buildTarget": "demo:build"
+      }
+    },
+    "e2e": {
+      "executor": "@nx/cypress:cypress",
+      "options": {
+        "cypressConfig": "apps/demo/cypress.config.ts",
+        "testingType": "e2e",
+        "devServerTarget": "demo:serve"
+      },
+      "configurations": {
+        "production": {
+          "devServerTarget": "demo:serve:production"
+        }
+      }
+    },
+    "test": {
+      "executor": "@nx/angular:unit-test",
+      "options": {
+        "watch": false
+      }
+    },
+    "serve-static": {
+      "executor": "@nx/web:file-server",
+      "dependsOn": ["build"],
+      "options": {
+        "buildTarget": "demo:build:production",
+        "spa": true,
+        "staticFilePath": "dist/apps/demo/browser/"
+      }
+    }
+  }
+}

@@ -1,0 +1,132 @@
+.main {
+  background: #fcfcfd;
+  min-height: calc(100vh - var(--ifm-navbar-height));
+}
+
+.hero {
+  align-items: center;
+  background:
+    linear-gradient(90deg, rgba(252, 252, 253, 0.98), rgba(252, 252, 253, 0.88)),
+    url('/img/docs-grid.svg');
+  background-size: cover;
+  color: #121926;
+  display: grid;
+  gap: 48px;
+  grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+  min-height: calc(100vh - var(--ifm-navbar-height) - 56px);
+  padding: 72px max(32px, calc((100vw - 1120px) / 2));
+}
+
+.heroContent {
+  max-width: 720px;
+}
+
+.eyebrow {
+  color: #6938ef;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  margin: 0 0 16px;
+}
+
+.title {
+  color: #121926;
+  font-size: clamp(3rem, 7vw, 5.5rem);
+  line-height: 1;
+  margin-bottom: 24px;
+}
+
+.subtitle {
+  color: #697586;
+  font-size: 1.25rem;
+  line-height: 1.55;
+  margin: 0;
+  max-width: 620px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.action {
+  min-width: 148px;
+}
+
+.visual {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.panel {
+  background: rgba(252, 252, 253, 0.86);
+  border: 1px solid #cdd5df;
+  border-radius: 8px;
+  box-shadow: 0 24px 80px rgba(18, 25, 38, 0.08);
+  display: grid;
+  gap: 16px;
+  max-width: 360px;
+  padding: 28px;
+  width: 100%;
+}
+
+.panel span {
+  color: #697586;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.9rem;
+}
+
+.panel strong {
+  background: #f8fafc;
+  border: 1px solid #eef2f6;
+  border-radius: 6px;
+  color: #121926;
+  display: block;
+  font-family: var(--ifm-font-family-monospace);
+  padding: 14px 16px;
+}
+
+[data-theme='dark'] .main {
+  background: #0d131c;
+}
+
+[data-theme='dark'] .hero {
+  background:
+    linear-gradient(90deg, rgba(13, 19, 28, 0.98), rgba(13, 19, 28, 0.9)),
+    url('/img/docs-grid.svg');
+  color: #fcfcfd;
+}
+
+[data-theme='dark'] .title {
+  color: #fcfcfd;
+}
+
+[data-theme='dark'] .subtitle {
+  color: #8b96a5;
+}
+
+[data-theme='dark'] .panel {
+  background: rgba(18, 25, 38, 0.9);
+  border-color: #364152;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.24);
+}
+
+[data-theme='dark'] .panel strong {
+  background: #202939;
+  border-color: #364152;
+  color: #fcfcfd;
+}
+
+@media (max-width: 840px) {
+  .hero {
+    grid-template-columns: 1fr;
+    min-height: auto;
+    padding: 56px 24px;
+  }
+
+  .visual {
+    justify-content: stretch;
+  }
+}
