@@ -19,6 +19,7 @@
         "tsConfig": "apps/demo/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "namedChunks": true,
+        "plugins": ["@push-based/ngx-chunks"],
         "assets": [
           {
             "glob": "**/*",
